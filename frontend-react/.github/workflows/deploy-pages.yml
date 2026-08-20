@@ -28,7 +28,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-          VITE_ASTROGUIDE_SERVER_URL: https://attributes-wider-cambridge-vip.trycloudflare.com
+          VITE_ASTROGUIDE_SERVER_URL: https://above-inspector-photo-preferences.trycloudflare.com
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
