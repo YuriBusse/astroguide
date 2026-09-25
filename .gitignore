@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+server/.env
+.env
+
+.env.*
+backups/
+dist.backup*/
+dist.old*/
+*.backup*
+
+# AstroGuide local / backup files
+.env.*
+backups/
+dist.backup*/
+dist.old*/
+*.backup*
+*.tar.gz
+*.zip
+
+# Local diagnostics / test pages
+diagnostic.html
+network-diagnostic.html
+mobile-test.html
+mobile-module-test.html
+mobile-module-test.js
+wasm-test.html
+old-index.html
+production-index.js
+production.js

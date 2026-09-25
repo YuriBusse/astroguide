@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: astroguide-api
+    runtime: node
+    rootDir: .
+    buildCommand: npm install
+    startCommand: npm run server
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 8787
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: YOOKASSA_SHOP_ID
+        sync: false
+      - key: YOOKASSA_SECRET_KEY
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false

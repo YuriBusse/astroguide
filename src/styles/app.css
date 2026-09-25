@@ -1,0 +1,1908 @@
+/* ============================================================
+   AstroGuide Mini App — mobile-first styles
+   Тема строится на CSS-переменных Telegram Web App.
+   Вне Telegram используются fallback-палитры ниже.
+   ============================================================ */
+
+/* --- Переменные темы (fallback, тёмная по умолчанию) --- */
+:root {
+  color-scheme: dark;
+
+  --tg-theme-bg-color: #1b1728;
+  --tg-theme-secondary-bg-color: #28223a;
+  --tg-theme-text-color: #f7f3fc;
+  --tg-theme-hint-color: #b4abc7;
+  --tg-theme-link-color: #8ab6ff;
+  --tg-theme-button-color: #aa70e8;
+  --tg-theme-button-text-color: #fff8ff;
+
+  --ag-gold: #f2c66d;
+  --ag-danger: #ff8b91;
+  --ag-success: #7bd5b5;
+  --ag-radius-lg: 18px;
+  --ag-radius-md: 14px;
+  --ag-radius-sm: 12px;
+  --ag-space: 16px;
+  --ag-nav-h: 64px;
+}
+
+/* Светлая палитра — активируется через data-color-scheme (Telegram) либо
+   prefers-color-scheme (обычный браузер). */
+:root[data-color-scheme="light"] {
+  color-scheme: light;
+  --tg-theme-bg-color: #f7f3ff;
+  --tg-theme-secondary-bg-color: #ede6fa;
+  --tg-theme-text-color: #241f33;
+  --tg-theme-hint-color: #8d86a0;
+  --tg-theme-link-color: #3a6fd8;
+  --tg-theme-button-color: #8e4fd6;
+  --tg-theme-button-text-color: #ffffff;
+}
+
+/* В обычном браузере сохраняем тёмную тему по умолчанию.
+   Если Telegram явно передал data-color-scheme="light", сработает палитра выше. */
+
+/* --- Базовый reset --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--tg-theme-bg-color);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  color: var(--tg-theme-text-color);
+  background:
+    radial-gradient(circle at 50% -10%, rgba(170, 112, 232, 0.12), transparent 42%),
+    var(--tg-theme-bg-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--tg-theme-button-color);
+  outline-offset: 2px;
+}
+
+/* --- Каркас приложения --- */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(170, 112, 232, 0.10), transparent 42%),
+    var(--tg-theme-bg-color);
+}
+
+/* Нижняя навигация фиксированная — резервируем место под неё.
+   env() не используем: в старых WebView iOS/Android эта функция не поддержана,
+   и тогда calc() вместе с env() отбрасывается целиком (контент прячется под навигацию). */
+.app-content {
+  flex: 1 1 auto;
+  padding: var(--ag-space);
+  padding-bottom: calc(var(--ag-nav-h) + var(--ag-space) + 12px);
+}
+
+/* --- Общие элементы экранов --- */
+.screen {
+  max-width: 480px;
+  margin: 0 auto;
+  animation: ag-fade-up 0.18s ease both;
+}
+
+@keyframes ag-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tg-theme-hint-color);
+}
+
+.icon-button {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-text-color);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.icon-button:active {
+  opacity: 0.8;
+}
+
+.screen-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0 14px;
+}
+
+.screen-top__title {
+  min-width: 0;
+}
+
+.screen-top__title h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--tg-theme-text-color);
+  margin-top: 2px;
+}
+
+/* --- Спиннер расчёта --- */
+.calc-spinner {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 14px;
+  border: 3px solid var(--tg-theme-hint-color);
+  border-top-color: var(--tg-theme-button-color);
+  border-radius: 50%;
+  animation: ag-spin 0.7s linear infinite;
+}
+
+@keyframes ag-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* --- Кнопки (AppButton) --- */
+.app-button {
+  appearance: none;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--ag-radius-md);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.12s ease;
+}
+
+.app-button--primary {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  box-shadow: 0 10px 26px -14px var(--tg-theme-button-color);
+}
+
+.app-button--secondary {
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-text-color);
+}
+
+.app-button--ghost {
+  background: transparent;
+  color: var(--tg-theme-button-color);
+  box-shadow: inset 0 0 0 1.5px var(--tg-theme-button-color);
+}
+
+.app-button--lg {
+  min-height: 54px;
+  font-size: 17px;
+  border-radius: 16px;
+}
+
+.app-button--sm {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.app-button:active:not(.is-disabled) {
+  transform: scale(0.97);
+}
+
+.app-button.is-disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+.app-button__icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.app-button__spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: ag-spin 0.7s linear infinite;
+}
+
+/* --- Карточки (AppCard) --- */
+.app-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 14px;
+  border: 0;
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-text-color);
+  text-align: left;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.app-card--pressable {
+  cursor: pointer;
+}
+
+.app-card--pressable:active {
+  transform: scale(0.98);
+}
+
+.app-card__icon {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--ag-radius-md);
+  background: color-mix(in srgb, var(--tg-theme-button-color) 16%, transparent);
+  font-size: 22px;
+}
+
+.app-card__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-card__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.app-card__subtitle {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--tg-theme-hint-color);
+}
+
+.app-card__status {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.app-card--active .app-card__status {
+  background: color-mix(in srgb, var(--tg-theme-button-color) 18%, transparent);
+  color: var(--tg-theme-button-color);
+}
+
+.app-card--soon .app-card__status {
+  background: color-mix(in srgb, var(--tg-theme-hint-color) 18%, transparent);
+  color: var(--tg-theme-hint-color);
+}
+
+.app-card__arrow {
+  flex: none;
+  color: var(--tg-theme-hint-color);
+  font-size: 16px;
+}
+
+/* --- Нижняя навигация (BottomNav) --- */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  padding: 8px 6px;
+  padding-bottom: 12px;
+  /* Сплошной фон — fallback для WebView без color-mix(), чтобы навигация
+     всегда была непрозрачной и контент под ней не «просвечивал». */
+  background: var(--tg-theme-bg-color);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid color-mix(in srgb, var(--tg-theme-hint-color) 22%, transparent);
+}
+
+.bottom-nav__item {
+  flex: 1 1 0;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 2px;
+  border: 0;
+  border-radius: var(--ag-radius-md);
+  background: transparent;
+  color: var(--tg-theme-hint-color);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bottom-nav__item.is-active {
+  color: var(--tg-theme-button-color);
+}
+
+.bottom-nav__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+/* --- Главный экран (Home) --- */
+.home-hero {
+  text-align: center;
+  padding: 26px 0 6px;
+}
+
+.home-hero__mark {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--tg-theme-button-color) 70%, #ffffff 30%), color-mix(in srgb, var(--tg-theme-button-color) 55%, var(--tg-theme-bg-color) 45%));
+  color: var(--tg-theme-button-color);
+  font-size: 34px;
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--tg-theme-button-color) 12%, transparent), 0 18px 40px -18px var(--tg-theme-button-color);
+}
+
+.home-hero__title {
+  font-size: clamp(25px, 7vw, 33px);
+  line-height: 1.18;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  color: var(--tg-theme-text-color);
+  margin-top: 4px;
+}
+
+.home-hero__text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--tg-theme-hint-color);
+  margin-top: 10px;
+}
+
+.home-cta {
+  margin: 20px 0 4px;
+}
+
+.home-features {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.home-footnote {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--tg-theme-hint-color);
+}
+
+/* --- Заглушки разделов (ComingSoon) --- */
+.screen--stub {
+  text-align: center;
+  padding-top: 40px;
+}
+
+.stub-hero__icon {
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--tg-theme-secondary-bg-color);
+  font-size: 40px;
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--tg-theme-button-color) 12%, transparent);
+}
+
+.stub-hero__title {
+  margin-top: 18px;
+  font-size: 26px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.stub-hero__text {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--tg-theme-hint-color);
+}
+
+.stub-badge {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tg-theme-button-color) 16%, transparent);
+  color: var(--tg-theme-button-color);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.stub-actions {
+  margin-top: 26px;
+}
+
+/* --- Форма рождения (ChartBirth) --- */
+.birth-progress {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 2px 0 18px;
+  padding: 8px 4px;
+}
+
+.birth-progress__step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-hint-color);
+}
+
+.birth-progress__step span {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tg-theme-hint-color) 18%, transparent);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.birth-progress__step small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.birth-progress__step.is-current {
+  background: color-mix(in srgb, var(--tg-theme-button-color) 22%, transparent);
+  color: var(--tg-theme-button-color);
+}
+
+.birth-progress__step.is-current span {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+}
+
+.birth-progress__step.is-done {
+  color: color-mix(in srgb, var(--tg-theme-gold), var(--tg-theme-text-color) 40%);
+}
+
+.birth-progress__step.is-done span {
+  background: color-mix(in srgb, var(--ag-gold) 30%, transparent);
+}
+
+.birth-card {
+  padding: 20px 16px;
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+}
+
+.birth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.birth-field__label {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--tg-theme-text-color);
+}
+
+.birth-field__input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 14px;
+  border: 1.5px solid color-mix(in srgb, var(--tg-theme-hint-color) 34%, transparent);
+  border-radius: var(--ag-radius-md);
+  background: color-mix(in srgb, var(--tg-theme-bg-color) 88%, transparent);
+  color: var(--tg-theme-text-color);
+  font-size: 17px;
+  text-align: center;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.birth-field__hint {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+}
+
+.birth-field__input--city {
+  text-align: left;
+}
+
+.city-list {
+  max-height: 264px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  gap: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.city-option {
+  min-height: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--ag-radius-md);
+  background: color-mix(in srgb, var(--tg-theme-bg-color) 94%, transparent);
+  color: var(--tg-theme-text-color);
+  text-align: left;
+  cursor: pointer;
+}
+
+.city-option__name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.city-option__timezone {
+  font-size: 11px;
+  color: var(--tg-theme-hint-color);
+  white-space: nowrap;
+}
+
+.city-option.is-selected {
+  background: color-mix(in srgb, var(--tg-theme-button-color) 18%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--tg-theme-button-color);
+  color: var(--tg-theme-button-color);
+}
+
+.form-error {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--ag-radius-md);
+  background: color-mix(in srgb, var(--ag-danger) 14%, transparent);
+  color: var(--ag-danger);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.birth-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+/* --- Экран результата (ChartResult) --- */
+.result-birth {
+  padding: 14px 12px;
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+}
+
+.result-birth__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 2px 0 12px;
+}
+
+.result-birth__meta span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tg-theme-hint-color) 13%, transparent);
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.result-birth__meta span:last-child {
+  color: var(--tg-theme-hint-color);
+}
+
+.result-bigthree {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  border-radius: var(--ag-radius-md);
+  overflow: hidden;
+  background: var(--tg-theme-bg-color);
+}
+
+.result-bigthree > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 6px;
+  min-height: 88px;
+}
+
+.result-bigthree span {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--tg-theme-hint-color);
+  white-space: nowrap;
+}
+
+.result-bigthree strong {
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  color: var(--tg-theme-text-color);
+  word-break: break-word;
+  text-align: center;
+}
+
+.result-bigthree small {
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--tg-theme-hint-color);
+  text-align: center;
+}
+
+.result-bigthree__accent {
+  background: color-mix(in srgb, var(--tg-theme-button-color) 10%, transparent);
+}
+
+.result-bigthree__accent strong {
+  color: var(--tg-theme-button-color);
+}
+
+/* --- Состояния расчёта --- */
+.calc-card {
+  margin-top: 26px;
+  padding: 34px 20px;
+  text-align: center;
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+}
+
+.calc-card strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--tg-theme-text-color);
+  margin-top: 10px;
+}
+
+.calc-card span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+}
+
+.calc-card--error {
+  border: 1.5px solid color-mix(in srgb, var(--ag-danger) 40%, transparent);
+}
+
+.calc-card__icon {
+  font-size: 30px;
+  display: block;
+  margin: 0 auto;
+}
+
+.calc-card h2 {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.calc-card h2:not(:empty) + p {
+  margin-top: 4px;
+}
+
+.calc-card p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+  word-break: break-word;
+}
+
+.calc-card .app-button {
+  margin-top: 16px;
+}
+
+.empty-note-card {
+  margin-top: 26px;
+  padding: 34px 20px;
+  text-align: center;
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+}
+
+.empty-note-card__icon {
+  display: block;
+  margin: 0 auto;
+  font-size: 34px;
+}
+
+.empty-note-card h2 {
+  margin-top: 12px;
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.empty-note-card p {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--tg-theme-hint-color);
+}
+
+.empty-note-card .app-button {
+  margin-top: 18px;
+}
+
+/* --- Секции внутри экранов --- */
+.result-section {
+  margin-top: 22px;
+}
+
+.section-heading {
+  padding: 2px 0 2px;
+}
+
+.section-heading h2 {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: var(--tg-theme-text-color);
+}
+
+.section-heading p {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+}
+
+.empty-note {
+  padding: 16px 14px;
+  border-radius: var(--ag-radius-md);
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-hint-color);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* --- Список аспектов --- */
+.aspect-list {
+  display: grid;
+  gap: 10px;
+}
+
+.aspect-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: var(--ag-radius-md);
+  background: var(--tg-theme-secondary-bg-color);
+}
+
+.aspect-row__glyphs {
+  width: 52px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  border-radius: var(--ag-radius-sm);
+  background: color-mix(in srgb, var(--tg-theme-button-color) 12%, transparent);
+  color: var(--tg-theme-text-color);
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.aspect-row__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.aspect-row__body strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--tg-theme-text-color);
+}
+
+.aspect-row__body span {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--tg-theme-hint-color);
+}
+
+/* --- CTA «Полный разбор» --- */
+.result-cta {
+  padding: 16px 14px;
+  border-radius: var(--ag-radius-lg);
+  background: color-mix(in srgb, var(--tg-theme-button-color) 10%, var(--tg-theme-secondary-bg-color));
+}
+
+.result-cta__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.result-cta__copy strong {
+  font-size: 15px;
+  font-weight: 850;
+  color: var(--tg-theme-text-color);
+}
+
+.result-cta__copy span {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+}
+
+.result-cta__note {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--tg-theme-hint-color);
+  text-align: center;
+}
+
+.result-actions {
+  margin-top: 12px;
+}
+/* ============================================================
+   Переиспользуемые компоненты старого проекта
+   (NatalWheel, BeginnerSummary, PersonalPortrait) — новые
+   mobile-first стили под их исходную разметку.
+   ============================================================ */
+
+/* --- NatalWheel: карточка и колесо --- */
+.natal-card {
+  margin-top: 22px;
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+  overflow: hidden;
+}
+
+.natal-card--loading {
+  min-height: 200px;
+  display: grid;
+  place-items: center;
+}
+
+.natal-card__heading {
+  padding: 14px 14px;
+}
+
+.natal-card__heading h2 {
+  margin-top: 2px;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: var(--tg-theme-text-color);
+}
+
+.natal-card__heading p {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+}
+
+.calculation-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tg-theme-button-color) 16%, transparent);
+  color: var(--tg-theme-button-color);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--tg-theme-hint-color);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-dot--planet {
+  background: var(--ag-gold);
+  box-shadow: 0 0 8px rgba(242, 198, 109, 0.5);
+}
+
+.legend-dot--aspect {
+  background: var(--tg-theme-button-color);
+}
+
+/* Колесо: фиксированный viewBox 400×400, масштабируется на всю ширину */
+.professional-wheel-wrap {
+  position: relative;
+  padding: 6px 6px 10px;
+}
+
+.professional-wheel {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.professional-wheel--loading {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  border: 3px solid var(--tg-theme-hint-color);
+  border-top-color: var(--tg-theme-button-color);
+  border-radius: 50%;
+  animation: ag-spin 0.8s linear infinite;
+  background: transparent;
+}
+
+/* Колесо всегда рисуется на тёмном фоне (это «небо» карты),
+   поэтому цвета элементов фиксированные, а не темы. */
+.wheel-bg {
+  stroke: none;
+}
+
+.wheel-outline {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 1.2;
+}
+
+.wheel-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 0.8;
+}
+
+.wheel-ring--zodiac {
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1;
+}
+
+.wheel-ring--inner {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.zodiac-divider {
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 0.6;
+}
+
+.zodiac-glyph {
+  fill: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.house-cusp {
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 0.8;
+}
+
+.house-cusp--angle {
+  stroke: rgba(242, 198, 109, 0.85);
+  stroke-width: 1.1;
+}
+
+.house-number {
+  fill: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.house-number--angle {
+  fill: rgba(242, 198, 109, 0.92);
+  font-weight: 700;
+}
+
+.angle-marker {
+  fill: rgba(242, 198, 109, 0.08);
+  stroke: rgba(242, 198, 109, 0.3);
+  stroke-width: 0.7;
+}
+
+.angle-label {
+  fill: rgba(242, 198, 109, 0.92);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+}
+
+.aspect-stroke {
+  fill: none;
+  stroke-width: 1;
+  opacity: 0.55;
+}
+
+.aspect-stroke.conjunction {
+  stroke: rgba(242, 198, 109, 0.62);
+}
+
+.aspect-stroke.sextile {
+  stroke: rgba(108, 194, 255, 0.52);
+}
+
+.aspect-stroke.square {
+  stroke: rgba(255, 117, 133, 0.5);
+}
+
+.aspect-stroke.trine {
+  stroke: rgba(123, 213, 185, 0.55);
+}
+
+.aspect-stroke.opposition {
+  stroke: rgba(201, 157, 255, 0.58);
+}
+
+.planet-guide {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 3;
+}
+
+.planet-node__halo--sun {
+  fill: #f2c66d;
+}
+
+.planet-node__halo--moon {
+  fill: #d4dcff;
+}
+
+.planet-node__halo--mercury,
+.planet-node__halo--venus {
+  fill: #bca1ff;
+}
+
+.planet-node__halo--mars {
+  fill: #ff8b91;
+}
+
+.planet-node__halo--jupiter {
+  fill: #e4b979;
+}
+
+.planet-node__halo--saturn {
+  fill: #b8a48b;
+}
+
+.planet-node__halo--uranus,
+.planet-node__halo--neptune {
+  fill: #7fcce8;
+}
+
+.planet-node__halo--pluto {
+  fill: #b895cf;
+}
+
+.planet-node__halo--node {
+  fill: #aaa0c7;
+}
+.planet-node__circle {
+  fill: rgba(10, 8, 20, 0.92);
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 0.8;
+}
+
+.planet-node__glyph {
+  fill: rgba(255, 255, 255, 0.95);
+  font-size: 11px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.wheel-center {
+  fill: #17152a;
+  stroke: rgba(242, 198, 109, 0.35);
+  stroke-width: 0.8;
+}
+
+.wheel-center__star {
+  fill: #f2c66d;
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+.wheel-center__label {
+  fill: rgba(255, 255, 255, 0.5);
+  font-size: 7px;
+  letter-spacing: 0.06em;
+  text-anchor: middle;
+}
+
+.planet-detail {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  max-width: 86%;
+  padding: 8px 12px;
+  border-radius: var(--ag-radius-sm);
+  background: var(--tg-theme-bg-color);
+  border: 1px solid color-mix(in srgb, var(--tg-theme-hint-color) 30%, transparent);
+  color: var(--tg-theme-text-color);
+  font-size: 12px;
+  box-shadow: 0 10px 24px -12px var(--tg-theme-button-color);
+}
+
+.planet-detail strong {
+  display: block;
+  font-weight: 800;
+}
+
+.planet-detail span {
+  display: block;
+  font-size: 11px;
+  color: var(--tg-theme-hint-color);
+}
+
+.chart-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 4px;
+  padding: 12px 10px;
+  border-radius: var(--ag-radius-md);
+  background: var(--tg-theme-bg-color);
+}
+
+.chart-stats > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.chart-stats span {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--tg-theme-hint-color);
+}
+
+.chart-stats strong {
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  color: var(--tg-theme-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.chart-stats small {
+  font-size: 10px;
+  color: var(--tg-theme-hint-color);
+}
+
+.planet-table {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr) minmax(0, 1fr) 42px;
+  gap: 4px 8px;
+  padding: 12px 10px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.planet-table > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.planet-table__head {
+  padding: 0 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--tg-theme-hint-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.planet-table__row {
+  min-width: 0;
+  max-width: 100%;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: var(--tg-theme-text-color);
+  overflow: hidden;
+}
+
+.planet-table__row:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.planet-table__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.planet-table__name b {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tg-theme-button-color) 12%, transparent);
+  font-size: 11px;
+}
+
+.planet-table__row span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.planet-table__row span:last-child {
+  font-size: 11px;
+  color: var(--tg-theme-hint-color);
+}
+
+@media (max-width: 360px) {
+  .planet-table__head span:nth-child(3),
+  .planet-table__row span:nth-child(3) {
+    display: none;
+  }
+
+  .planet-table {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.95fr) 40px;
+    gap: 4px 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+/* --- BeginnerSummary (шесть позиций) --- */
+.beginner-summary {
+  margin-top: 22px;
+}
+
+.beginner-summary--compact {
+  margin-top: 22px;
+  border-radius: var(--ag-radius-lg);
+  background: transparent;
+}
+
+.beginner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.beginner-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 10px;
+  min-height: 64px;
+  border-radius: var(--ag-radius-md);
+  background: var(--tg-theme-secondary-bg-color);
+}
+
+.beginner-item__symbol {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--ag-radius-sm);
+  background: color-mix(in srgb, var(--ag-gold) 18%, transparent);
+  font-size: 18px;
+}
+
+.beginner-item:nth-child(3n) .beginner-item__symbol {
+  background: color-mix(in srgb, var(--tg-theme-button-color) 18%, transparent);
+}
+
+.beginner-item > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.beginner-item__name {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--tg-theme-hint-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.beginner-item strong {
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  color: var(--tg-theme-text-color);
+  word-break: break-word;
+}
+
+.beginner-item small {
+  font-size: 10px;
+  line-height: 1.3;
+  color: var(--tg-theme-hint-color);
+}
+
+/* --- PersonalPortrait (краткий портрет) --- */
+.personal-portrait {
+  margin-top: 22px;
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+  overflow: hidden;
+}
+
+.personal-portrait__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px;
+}
+
+.personal-portrait__header > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.personal-portrait__header h2 {
+  margin-top: 2px;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: var(--tg-theme-text-color);
+}
+
+.personal-portrait__header p {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+}
+
+.portrait-badge {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ag-success) 14%, transparent);
+  color: var(--ag-success);
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.portrait-lead {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 10px 14px 0;
+  padding: 12px 12px;
+  border-radius: var(--ag-radius-md);
+  background: color-mix(in srgb, var(--tg-theme-button-color) 8%, transparent);
+}
+
+.portrait-lead__mark {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ag-gold) 20%, transparent);
+  color: var(--ag-gold);
+  font-size: 14px;
+}
+
+.portrait-lead > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.portrait-lead strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--tg-theme-text-color);
+}
+
+.portrait-lead p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--tg-theme-hint-color);
+}
+
+.portrait-bottom {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.portrait-mini {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 4px;
+  border-radius: var(--ag-radius-sm);
+  background: var(--tg-theme-bg-color);
+  text-align: center;
+}
+
+.portrait-mini__label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--tg-theme-hint-color);
+  white-space: nowrap;
+}
+
+.portrait-mini strong {
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  color: var(--tg-theme-text-color);
+  word-break: break-word;
+}
+
+.portrait-mini p {
+  font-size: 9px;
+  line-height: 1.35;
+  color: var(--tg-theme-hint-color);
+  word-break: break-word;
+}
+
+.portrait-aspect-teaser {
+  margin: 8px 14px 0;
+  padding: 12px 12px;
+  border-radius: var(--ag-radius-md);
+  background: color-mix(in srgb, var(--tg-theme-button-color) 10%, transparent);
+}
+
+.portrait-aspect-teaser span {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--tg-theme-button-color);
+}
+
+.portrait-aspect-teaser strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--tg-theme-text-color);
+}
+
+.portrait-aspect-teaser p {
+  margin-top: 3px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--tg-theme-hint-color);
+}
+
+/* =========================================================
+   ASTROGUIDE — RESULT FIX
+   ========================================================= */
+
+/* ---------- PREMIUM TEASER ---------- */
+
+.result-section--premium-teaser {
+  margin: 22px 0;
+  padding: 20px;
+  border: 1px solid rgba(242, 198, 109, 0.20);
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(242, 198, 109, 0.10),
+      transparent 45%
+    ),
+    rgba(255, 255, 255, 0.035);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.result-section--premium-teaser__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-width: 0;
+}
+
+.result-section--premium-teaser__copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.result-section--premium-teaser__copy .eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: #f2c66d;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.result-section--premium-teaser__copy h2 {
+  margin: 0 0 8px;
+  color: var(--tg-theme-text-color);
+  font-size: 21px;
+  line-height: 1.15;
+}
+
+.result-section--premium-teaser__copy p {
+  margin: 0;
+  max-width: 560px;
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.result-section--premium-teaser__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.result-section--premium-teaser__chips span {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid rgba(242, 198, 109, 0.18);
+  border-radius: 999px;
+  background: rgba(242, 198, 109, 0.07);
+  color: rgba(242, 198, 109, 0.9);
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.result-section--premium-teaser__button {
+  flex: 0 0 205px;
+  width: 205px;
+  min-height: 82px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  padding: 13px 14px;
+
+  border: 1px solid rgba(242, 198, 109, 0.34);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(242, 198, 109, 0.18),
+      rgba(242, 198, 109, 0.06)
+    );
+
+  color: var(--tg-theme-text-color);
+  font: inherit;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.result-section--premium-teaser__button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(242, 198, 109, 0.55);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(242, 198, 109, 0.24),
+      rgba(242, 198, 109, 0.08)
+    );
+}
+
+.result-section--premium-teaser__button strong {
+  display: block;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.result-section--premium-teaser__button span {
+  display: block;
+  color: #f2c66d;
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.result-section--premium-teaser__button b {
+  display: block;
+  margin-top: 1px;
+  color: #f2c66d;
+  font-size: 14px;
+  line-height: 1;
+}
+
+
+/* ---------- PLANET TABLE ---------- */
+
+/*
+  IMPORTANT:
+  .planet-table is the parent grid.
+  Every .planet-table__row must occupy the FULL width,
+  otherwise the rows themselves become separate grid items.
+*/
+
+.planet-table {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 6px 8px;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding: 12px 10px;
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.planet-table__head {
+  grid-column: 1 / -1;
+
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+
+  box-sizing: border-box;
+}
+
+.planet-table__row {
+  grid-column: 1 / -1;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.45fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    46px;
+
+  gap: 8px;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding: 7px 10px;
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.planet-table__row > * {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planet-table__name {
+  display: inline-flex;
+  align-items: center;
+
+  min-width: 0;
+  max-width: 100%;
+
+  gap: 6px;
+
+  overflow: hidden;
+}
+
+.planet-table__name b {
+  width: 20px;
+  height: 20px;
+
+  flex: 0 0 20px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+}
+
+.planet-table__name span {
+  min-width: 0;
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 600px) {
+
+  .result-section--premium-teaser {
+    padding: 16px;
+  }
+
+  .result-section--premium-teaser__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .result-section--premium-teaser__button {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .result-section--premium-teaser__copy h2 {
+    font-size: 19px;
+  }
+
+  .planet-table {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .planet-table__row {
+    grid-template-columns:
+      minmax(0, 1.45fr)
+      minmax(0, 0.9fr)
+      minmax(0, 0.8fr)
+      40px;
+
+    gap: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+
+  .planet-table__row {
+    grid-template-columns:
+      minmax(0, 1.4fr)
+      minmax(0, 0.85fr)
+      38px;
+  }
+
+  .planet-table__row > :nth-child(3) {
+    display: none;
+  }
+}
