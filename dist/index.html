@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+  <meta name="theme-color" content="#1b1728" />
+
+  <style>
+    html,
+    body,
+    #root {
+      margin: 0;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      min-height: 100%;
+      background: #1b1728;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    #root {
+      position: relative;
+      min-height: 100%;
+    }
+
+    #ag-boot {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: var(--tg-viewport-stable-height, 100%);
+      min-height: 100%;
+      box-sizing: border-box;
+      display: grid;
+      place-items: center;
+      padding:
+        max(24px, env(safe-area-inset-top))
+        max(24px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(24px, env(safe-area-inset-left));
+      color: #f7f3fc;
+      background: #1b1728;
+      text-align: center;
+    }
+
+    #ag-boot > div {
+      max-width: 320px;
+    }
+
+    #ag-boot strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    #ag-boot span {
+      display: block;
+      color: #b4abc7;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+
+  <title>AstroGuide</title>
+  <script type="module" crossorigin src="/assets/index-jppy3o9K.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-D67FrFnG.css">
+</head>
+
+<body>
+  <div id="root">
+    <div id="ag-boot">
+      <div>
+        <strong>AstroGuide</strong>
+        <span>Запускаем приложение…</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
