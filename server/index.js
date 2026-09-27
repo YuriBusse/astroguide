@@ -475,7 +475,7 @@ const server = http.createServer(async (req, res) => {
         headers: { Prefer: "return=representation" },
         body: JSON.stringify({
           user_id: user.id,
-          amount_rub: 499,
+          amount_rub: 299,
           status: "pending",
           provider: "telegram_stars",
           chart_id: chartRow.id,

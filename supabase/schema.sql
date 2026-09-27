@@ -23,7 +23,7 @@ create table if not exists public.charts (
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  amount_rub integer not null default 499,
+  amount_rub integer not null default 299,
   status text not null default 'pending' check (status in ('pending','paid','cancelled','refunded')),
   provider text not null default 'yookassa',
   provider_payment_id text,
