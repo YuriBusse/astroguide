@@ -583,7 +583,7 @@ export function PremiumReport({ report, chart }) {
               ))}
             </nav>
             <div className="premium-report-sidebar__note">
-              <span>300 ₽ · PREMIUM</span>
+              <span>299 ₽ · PREMIUM</span>
               <p>Сохраните этот отчёт как ориентир для саморефлексии, а не как жёсткий прогноз.</p>
             </div>
           </div>

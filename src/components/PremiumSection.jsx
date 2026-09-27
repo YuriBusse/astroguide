@@ -355,7 +355,7 @@ function PremiumSection({
         </div>
         <div className="premium-price">
           <span>ПОЛНЫЙ РАЗБОР</span>
-          <strong>300 ₽</strong>
+          <strong>299 ₽</strong>
           <small>разовая покупка · без подписки</small>
         </div>
       </div>
@@ -378,7 +378,7 @@ function PremiumSection({
           </div>
           <p>Не справочник по знакам, а связная интерпретация: что повторяется в вашей карте и как отдельные показатели работают вместе.</p>
           <ul>{premiumItems.map((item) => <li key={item}><span>✦</span>{item}</li>)}</ul>
-          <div className="comparison-card__price"><strong>300 ₽</strong><span>один раз · без подписки</span></div>
+          <div className="comparison-card__price"><strong>299 ₽</strong><span>один раз · без подписки</span></div>
         </article>
       </div>
 
@@ -414,7 +414,7 @@ function PremiumSection({
             <button className="premium-buy premium-buy--unlocked" type="button" onClick={() => setReportOpen(true)}>✓ Открыть Premium</button>
           ) : (
             <button className="premium-buy" type="button" onClick={() => setCheckoutOpen(true)} disabled={premiumChecking}>
-              {premiumChecking ? "Проверяем доступ…" : "Получить полный разбор — 300 ₽"} {!premiumChecking && <span>→</span>}
+              {premiumChecking ? "Проверяем доступ…" : "Получить полный разбор — 299 ₽"} {!premiumChecking && <span>→</span>}
             </button>
           )}
         </div>
@@ -442,7 +442,7 @@ function PremiumSection({
             <p>Бесплатно вы видите положение планеты. Premium связывает планету, знак, дом и аспекты и переводит их в единый вывод.</p>
             <div className="premium-demo-card"><span>❤️ ОТНОШЕНИЯ</span><strong>Бесплатно: Венера в {venus}</strong><p>Premium: как Венера сочетается с Марсом, 5-м и 7-м домами и значимыми аспектами, какие потребности повторяются и где могут возникать сложности.</p></div>
             <div className="premium-demo-card"><span>🧠 ЛИЧНОСТЬ</span><strong>Солнце + Луна + ASC</strong><p>Premium показывает не три отдельных значения, а их сочетание: что человек чувствует внутри, как хочет проявляться и какое впечатление может производить.</p></div>
-            <button className="premium-buy premium-buy--wide" type="button" onClick={() => { setDemoOpen(false); setCheckoutOpen(true); }}>Получить полный разбор — 300 ₽</button>
+            <button className="premium-buy premium-buy--wide" type="button" onClick={() => { setDemoOpen(false); setCheckoutOpen(true); }}>Получить полный разбор — 299 ₽</button>
             <small className="premium-note">Оплата защищена сервером. Premium не разблокируется до подтверждения платежа.</small>
           </div>
         </div>
@@ -466,12 +466,12 @@ function PremiumSection({
             <button className="premium-modal__close" type="button" onClick={() => setCheckoutOpen(false)} aria-label="Закрыть">×</button>
             <span className="eyebrow">ASTROGUIDE PREMIUM</span>
             <h3 id="premium-checkout-title">Полный разбор вашей натальной карты</h3>
-            <p>Один раз оплачиваете 300 ₽ — без подписки. После оплаты полный персональный анализ будет доступен в вашем аккаунте.</p>
+            <p>Один раз оплачиваете 299 ₽ — без подписки. После оплаты полный персональный анализ будет доступен в вашем аккаунте.</p>
             <div className="checkout-summary">
               <div><span>🧠</span><strong>Личность</strong></div><div><span>❤️</span><strong>Отношения</strong></div><div><span>💼</span><strong>Карьера</strong></div>
               <div><span>💰</span><strong>Деньги</strong></div><div><span>🧭</span><strong>Развитие</strong></div><div><span>✨</span><strong>Аспекты</strong></div>
             </div>
-            <div className="checkout-total"><span>Итого</span><strong>300 ₽</strong></div>
+            <div className="checkout-total"><span>Итого</span><strong>299 ₽</strong></div>
             {paymentError && <div className="account-error">{paymentError}</div>}
             <div className="checkout-payment-methods">
               <button
@@ -485,7 +485,7 @@ function PremiumSection({
                   <strong>Telegram Stars</strong>
                   <small>Оплата прямо внутри Telegram</small>
                 </span>
-                <span className="checkout-payment__price">300 ★</span>
+                <span className="checkout-payment__price">299 ★</span>
               </button>
 
               <button
@@ -499,7 +499,7 @@ function PremiumSection({
                   <strong>СБП</strong>
                   <small>Оплата через защищённую страницу ЮKassa</small>
                 </span>
-                <span className="checkout-payment__price">300 ₽</span>
+                <span className="checkout-payment__price">299 ₽</span>
               </button>
             </div>
             {["creating", "redirecting", "checking"].includes(paymentState) && (
