@@ -4,6 +4,9 @@ import AppButton from "../AppButton";
 import { cloudConfigured, getCloudCharts, getSession, getValidSession } from "../../utils/cloud";
 
 const STORAGE_KEY = "astroguide_saved_charts";
+const SERVER_URL = import.meta.env.DEV
+  ? ""
+  : import.meta.env.VITE_ASTROGUIDE_SERVER_URL || "";
 
 function readLocalCharts() {
   try {
@@ -71,6 +74,7 @@ function ProfilePage({ onNavigate }) {
   const [status, setStatus] = useState("loading");
   const [error, setError] = useState("");
   const [premiumStatus, setPremiumStatus] = useState("checking");
+  const [premiumChart, setPremiumChart] = useState(null);
 
   const loadProfile = useCallback(async () => {
     setStatus("loading");
@@ -81,25 +85,55 @@ function ProfilePage({ onNavigate }) {
 
     if (!currentSession) {
       setCharts([]);
+      setPremiumChart(null);
+      setPremiumStatus("inactive");
+      setStatus("ready");
+      return;
+    }
+
+    let normalizedCharts = [];
+    try {
+      const loadedCharts = cloudConfigured && currentSession.access_token
+        ? await getCloudCharts()
+        : readLocalCharts();
+      normalizedCharts = (loadedCharts || []).map(normalizeChart);
+      setCharts(normalizedCharts);
+    } catch (loadError) {
+      setCharts([]);
+      setPremiumChart(null);
+      setPremiumStatus("inactive");
+      setError(loadError.message || "Не удалось загрузить профиль.");
+      setStatus("error");
+      return;
+    }
+
+    const chartCandidates = normalizedCharts.filter((chart) => chart.date && chart.time && chart.city);
+    if (!cloudConfigured || !chartCandidates.length) {
+      setPremiumChart(null);
       setPremiumStatus("inactive");
       setStatus("ready");
       return;
     }
 
     try {
-      const loadedCharts = cloudConfigured && currentSession.access_token
-        ? await getCloudCharts()
-        : readLocalCharts();
-      const normalizedCharts = (loadedCharts || []).map(normalizeChart);
-      setCharts(normalizedCharts);
-      setPremiumStatus(cloudConfigured && normalizedCharts.some((chart) => chart.premium) ? "active" : "inactive");
-      setStatus("ready");
-    } catch (loadError) {
-      setCharts([]);
-      setPremiumStatus("inactive");
-      setError(loadError.message || "Не удалось загрузить профиль.");
-      setStatus("error");
+      const premiumResults = await Promise.all(chartCandidates.map(async (chart) => {
+        const query = new URLSearchParams({ date: chart.date, time: chart.time, city: chart.city });
+        const response = await fetch(`${SERVER_URL}/api/premium-status?${query.toString()}`, {
+          headers: { Authorization: `Bearer ${currentSession.access_token}` }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || "Не удалось проверить Premium.");
+        return { chart, premium: Boolean(data.premium) };
+      }));
+      const activeChart = premiumResults.find((result) => result.premium)?.chart || null;
+      setPremiumChart(activeChart);
+      setPremiumStatus(activeChart ? "active" : "inactive");
+    } catch (premiumError) {
+      setPremiumChart(null);
+      setPremiumStatus("error");
+      setError(premiumError.message || "Не удалось проверить Premium.");
     }
+    setStatus("ready");
   }, []);
 
   useEffect(() => {
@@ -126,6 +160,23 @@ function ProfilePage({ onNavigate }) {
     setAccountOpen(false);
     void loadProfile();
   };
+
+  const openReports = () => {
+    const reportChart = premiumChart || charts[0];
+    if (!reportChart) {
+      onNavigate("/chart-birth");
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("astroguide:open-reports", { detail: reportChart }));
+  };
+
+  const premiumLabel = premiumStatus === "checking"
+    ? "Проверяем Premium…"
+    : premiumStatus === "active"
+      ? "Premium активен"
+      : premiumStatus === "error"
+        ? "Статус Premium недоступен"
+        : "Premium не подключён";
 
   if (status === "loading") {
     return (
@@ -163,7 +214,7 @@ function ProfilePage({ onNavigate }) {
             <span>{userIdentifier}</span>
           </div>
           <span className={`profile-premium-badge profile-premium-badge--${premiumStatus}`}>
-            {premiumStatus === "checking" ? "Проверяем Premium…" : premiumStatus === "active" ? "✦ Premium активен" : "Premium не подключён"}
+            {premiumStatus === "active" ? "✦ " : ""}{premiumLabel}
           </span>
         </section>
 
@@ -193,6 +244,21 @@ function ProfilePage({ onNavigate }) {
           <div className="profile-section__heading"><div><span className="eyebrow">БЫСТРЫЕ ДЕЙСТВИЯ</span><h2>Продолжить путь</h2></div></div>
           <AppButton onClick={() => onNavigate("/chart-birth")}>Создать натальную карту</AppButton>
           <AppButton variant="secondary" onClick={openAccount}>Управление аккаунтом</AppButton>
+        </section>
+
+        <section className="profile-section profile-reports">
+          <div className="profile-reports__copy">
+            <span className="eyebrow">ASTROGUIDE PREMIUM</span>
+            <h2>Premium-отчёты</h2>
+            <p>Каталог персональных разборов: характер, отношения, карьера и жизненные периоды.</p>
+          </div>
+          <AppButton
+            variant={premiumStatus === "active" ? "primary" : "secondary"}
+            onClick={openReports}
+            disabled={premiumStatus === "checking" || premiumStatus === "error"}
+          >
+            {premiumStatus === "active" ? "Открыть отчёты" : "Активировать Premium"}
+          </AppButton>
         </section>
       </section>
       <AccountPanel open={accountOpen} onClose={closeAccount} onAuthChange={loadProfile} />

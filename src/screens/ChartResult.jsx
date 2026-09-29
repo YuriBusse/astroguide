@@ -14,7 +14,7 @@ import { ascendantInterpretations } from "../data/interpretations/ascendant";
 
 // Экран результата: переиспользует расчётный стек Swiss Ephemeris
 // и компоненты NatalWheel, BeginnerSummary, PersonalPortrait.
-function ChartResult({ chart, onNavigate, onBack }) {
+function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onReportsRequestHandled }) {
   const [result, setResult] = useState(null);
   const [calculationError, setCalculationError] = useState("");
 
@@ -180,14 +180,14 @@ function ChartResult({ chart, onNavigate, onBack }) {
             <span className="eyebrow">PREMIUM</span>
             <h2>Полный персональный разбор</h2>
             <p>
-              Отношения, карьера, деньги, личность и точки роста —
-              единый разбор всей вашей натальной карты.
+              Характер, отношения, карьера и жизненные периоды —
+              единый каталог Premium-разборов вашей натальной карты.
             </p>
             <div className="result-section--premium-teaser__chips">
               <span>Личность</span>
               <span>Отношения</span>
               <span>Карьера</span>
-              <span>Деньги</span>
+              <span>Жизненные периоды</span>
             </div>
           </div>
 
@@ -274,6 +274,8 @@ function ChartResult({ chart, onNavigate, onBack }) {
           mcLongitude={mcLongitude}
           chart={chart}
           aspects={aspects}
+          reportsRequested={reportsRequested}
+          onReportsRequestHandled={onReportsRequestHandled}
           />
 
         </div>

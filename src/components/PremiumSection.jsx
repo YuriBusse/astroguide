@@ -17,14 +17,10 @@ const freeItems = [
 ];
 
 const premiumItems = [
-  "Глубокий синтез всей карты",
-  "Личность и внутренние противоречия",
-  "Отношения и сценарии близости",
-  "Карьера и деньги",
-  "Развитие и повторяющиеся жизненные темы",
-  "Подробный анализ аспектов",
-  "Уран, Нептун, Плутон и их связи",
-  "Полный структурированный отчёт"
+  "Характер и личность — демонстрационный отчёт",
+  "Отношения — в разработке",
+  "Карьера и реализация — в разработке",
+  "Жизненные периоды — скоро"
 ];
 
 const SERVER_URL = import.meta.env.DEV
@@ -61,7 +57,9 @@ function PremiumSection({
   planetLongitudes = {},
   planetHouses = {},
   ascendantLongitude,
-  mcLongitude
+  mcLongitude,
+  reportsRequested = false,
+  onReportsRequestHandled
 }) {
   const [demoOpen, setDemoOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -123,6 +121,17 @@ function PremiumSection({
     };
   }, [chart?.date, chart?.time, chart?.city]);
 
+  useEffect(() => {
+    if (!reportsRequested || premiumChecking) return;
+    if (premiumUnlocked) {
+      setSelectedReportId(null);
+      setReportsOpen(true);
+    } else {
+      setCheckoutOpen(true);
+    }
+    onReportsRequestHandled?.();
+  }, [reportsRequested, premiumChecking, premiumUnlocked, onReportsRequestHandled]);
+
   const teasers = useMemo(() => [
     {
       icon: "🧠",
@@ -138,31 +147,17 @@ function PremiumSection({
     },
     {
       icon: "💼",
-      title: "Карьера",
+      title: "Карьера и реализация",
       text: "Карта содержит несколько показателей профессиональной реализации. В бесплатной версии мы не сводим их в единый вывод...",
       unlock: "Рабочий стиль, мотивация, реализация и сильные стороны"
     },
     {
-      icon: "💰",
-      title: "Деньги",
-      text: "Финансовая тема рассматривается через несколько домов и их управителей. Отдельное положение планеты не даёт полного ответа...",
-      unlock: "Отношение к ресурсам, стабильности, риску и заработку"
-    },
-    {
-      icon: "🧭",
-      title: "Развитие",
-      text: "Северный узел, Сатурн и напряжённые аспекты могут образовывать повторяющиеся темы. Их связь между собой скрыта в бесплатной версии...",
-      unlock: "Направления роста и темы, которые стоит осознанно развивать"
-    },
-    {
-      icon: "✨",
-      title: "Аспекты",
-      text: aspects[0]
-        ? `${aspects[0].aName} ${aspects[0].symbol} ${aspects[0].bName} — лишь один фрагмент общей картины...`
-        : "Связи между планетами помогают увидеть динамику карты, а не отдельные качества...",
-      unlock: "Синтез самых сильных и точных аспектов"
+      icon: "◒",
+      title: "Жизненные периоды",
+      text: "Этот раздел находится в разработке и позже поможет бережно рассматривать повторяющиеся циклы и переходы.",
+      unlock: "Скоро"
     }
-  ], [zodiac, moon, ascendant, venus, aspects]);
+  ], [zodiac, moon, ascendant, venus]);
 
   useEffect(() => {
     const onCheckout = () => {
@@ -473,7 +468,7 @@ function PremiumSection({
         <div>
           <span className="premium-cta__eyebrow">ПОЛНЫЙ ПЕРСОНАЛЬНЫЙ РАЗБОР</span>
           <strong>Узнайте, как вся карта складывается в одну историю.</strong>
-          <p>Один платёж — доступ ко всем пяти темам, аспектам и глубокому синтезу карты.</p>
+          <p>Один платёж — доступ к каталогу Premium-отчётов и полному персональному разбору карты.</p>
         </div>
         <div className="premium-cta__actions">
           <button className="premium-demo" type="button" onClick={() => setDemoOpen(true)}>Посмотреть пример</button>
@@ -557,8 +552,7 @@ function PremiumSection({
             <h3 id="premium-checkout-title">Полный разбор вашей натальной карты</h3>
             <p>Один раз оплачиваете 299 ₽ — без подписки. После оплаты полный персональный анализ будет доступен в вашем аккаунте.</p>
             <div className="checkout-summary">
-              <div><span>🧠</span><strong>Личность</strong></div><div><span>❤️</span><strong>Отношения</strong></div><div><span>💼</span><strong>Карьера</strong></div>
-              <div><span>💰</span><strong>Деньги</strong></div><div><span>🧭</span><strong>Развитие</strong></div><div><span>✨</span><strong>Аспекты</strong></div>
+              <div><span>◌</span><strong>Характер и личность</strong></div><div><span>♡</span><strong>Отношения</strong></div><div><span>⌁</span><strong>Карьера и реализация</strong></div><div><span>◒</span><strong>Жизненные периоды</strong></div>
             </div>
             <div className="checkout-total"><span>Итого</span><strong>299 ₽</strong></div>
             {paymentError && (

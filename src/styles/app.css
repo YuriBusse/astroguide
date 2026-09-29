@@ -2618,6 +2618,11 @@ p {
   color: var(--tg-theme-button-color);
 }
 
+.profile-premium-badge--error {
+  color: var(--ag-danger);
+  background: color-mix(in srgb, var(--ag-danger) 12%, transparent);
+}
+
 .profile-section {
   margin-top: 24px;
 }
@@ -2791,6 +2796,36 @@ p {
 
 .profile-actions .profile-section__heading {
   margin-bottom: 2px;
+}
+
+.profile-reports {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--ag-gold) 28%, var(--ag-border));
+  border-radius: var(--ag-radius-lg);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--ag-gold) 9%, var(--tg-theme-secondary-bg-color)), var(--tg-theme-secondary-bg-color));
+}
+
+.profile-reports__copy {
+  min-width: 0;
+}
+
+.profile-reports h2 {
+  margin: 5px 0 6px;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.profile-reports p {
+  margin: 0;
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.profile-reports .app-button {
+  width: 100%;
 }
 
 @media (max-width: 380px) {

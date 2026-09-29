@@ -22,9 +22,9 @@ const FEATURES = [
     icon: "🃏",
     title: "Таро",
     subtitle: "Расклады, которые отвечают на вопросы дня",
-    status: "Скоро",
-    tone: "soon",
-    path: null
+    status: "Доступно",
+    tone: "active",
+    path: "tarot"
   },
   {
     icon: "✨",

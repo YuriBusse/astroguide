@@ -78,6 +78,7 @@ function ChartResultFallback() {
 function App() {
   const [route, setRoute] = useState(readHash);
   const [pendingChart, setPendingChart] = useState(loadPendingChart);
+  const [reportsRequested, setReportsRequested] = useState(false);
 
   useEffect(() => {
     const onHash = () => setRoute(readHash());
@@ -92,13 +93,27 @@ function App() {
       }
       navigateToChartResult();
     };
+    const onOpenReports = (event) => {
+      const chart = event.detail;
+      if (!chart?.date || !chart?.time || !chart?.city) return;
+      setPendingChart(chart);
+      try {
+        localStorage.setItem(PENDING_KEY, JSON.stringify(chart));
+      } catch {
+        // Продолжаем работать в памяти.
+      }
+      navigateToChartResult();
+      setReportsRequested(true);
+    };
 
     window.addEventListener("hashchange", onHash);
     window.addEventListener("astroguide:open-chart", onOpenChart);
+    window.addEventListener("astroguide:open-reports", onOpenReports);
 
     return () => {
       window.removeEventListener("hashchange", onHash);
       window.removeEventListener("astroguide:open-chart", onOpenChart);
+      window.removeEventListener("astroguide:open-reports", onOpenReports);
     };
   }, []);
 
@@ -160,6 +175,8 @@ function App() {
           chart={pendingChart}
           onNavigate={navigate}
           onBack={() => navigate("/")}
+          reportsRequested={reportsRequested}
+          onReportsRequestHandled={() => setReportsRequested(false)}
         />
       </Suspense>
     );
