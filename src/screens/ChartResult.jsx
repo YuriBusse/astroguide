@@ -174,6 +174,30 @@ function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onRe
         </div>
       </div>
 
+      <section className="result-orientation" aria-labelledby="result-orientation-title">
+        <div className="result-orientation__heading">
+          <span className="eyebrow">КАК ЧИТАТЬ</span>
+          <h2 id="result-orientation-title">Начните с трёх главных ориентиров</h2>
+          <p>Натальная карта — это символическая схема неба в момент рождения. Ниже — язык астрологической традиции для самонаблюдения, а не научный диагноз или готовый прогноз.</p>
+        </div>
+        <div className="result-orientation__grid">
+          <article>
+            <strong>Солнце</strong>
+            <span>Как вы проявляете волю, интересы и желание быть собой.</span>
+          </article>
+          <article>
+            <strong>Луна</strong>
+            <span>Что помогает чувствовать внутренний комфорт и безопасность.</span>
+          </article>
+          <article>
+            <strong>ASC — асцендент</strong>
+            <span>Как вы входите в новые ситуации и какое первое впечатление создаёте.</span>
+          </article>
+        </div>
+        {chart.timeApproximate && (
+          <p className="result-orientation__approx">Время рождения указано приблизительно, поэтому Асцендент и дома стоит воспринимать как ориентир.</p>
+        )}
+      </section>
       <section className="result-section result-section--premium-teaser">
         <div className="result-section--premium-teaser__inner">
           <div className="result-section--premium-teaser__copy">
@@ -240,7 +264,7 @@ function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onRe
         <div className="section-heading">
           <span className="eyebrow">ВЗАИМОДЕЙСТВИЕ ПЛАНЕТ</span>
           <h2>Основные аспекты</h2>
-          <p>Угловые связи между планетами — как разные части карты работают вместе.</p>
+          <p>Аспект — это угловая связь между планетами. В астрологической традиции её используют, чтобы описывать, как разные темы карты могут взаимодействовать.</p>
         </div>
         {aspects.length ? (
           <div className="aspect-list">

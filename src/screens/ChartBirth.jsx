@@ -17,6 +17,7 @@ function ChartBirth({ onComplete, onBack }) {
   const [step, setStep] = useState(1);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [timeApproximate, setTimeApproximate] = useState(false);
   const [city, setCity] = useState("");
   const [cityQuery, setCityQuery] = useState("");
   const [error, setError] = useState("");
@@ -55,6 +56,7 @@ function ChartBirth({ onComplete, onBack }) {
     onComplete({
       date,
       time,
+      timeApproximate,
       city,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
@@ -90,6 +92,14 @@ function ChartBirth({ onComplete, onBack }) {
         ))}
       </div>
 
+      <div className="birth-intro">
+        <div className="birth-intro__mark" aria-hidden="true">🔮</div>
+        <div>
+          <strong>Что мы сейчас сделаем</strong>
+          <p>Укажем данные рождения и соберём карту. Затем разберём главные символы простыми словами — без необходимости знать астрологию.</p>
+        </div>
+      </div>
+
       <div className="birth-card">
         {step === 1 && (
           <div className="birth-field">
@@ -119,12 +129,29 @@ function ChartBirth({ onComplete, onBack }) {
               value={time}
               onChange={(event) => {
                 setTime(event.target.value);
+                setTimeApproximate(false);
                 setError("");
               }}
             />
             <small className="birth-field__hint">
-              Время влияет на Асцендент и дома. Если точно не знаете — поставьте 12:00.
+              Время влияет на Асцендент (первое впечатление) и дома (жизненные области).
             </small>
+            <label className="birth-time-unknown">
+              <input
+                type="checkbox"
+                checked={timeApproximate}
+                onChange={(event) => {
+                  const enabled = event.target.checked;
+                  setTimeApproximate(enabled);
+                  if (enabled) setTime("12:00");
+                  setError("");
+                }}
+              />
+              <span>
+                <strong>Точное время неизвестно</strong>
+                <small>Возьмём 12:00 как ориентир. Асцендент и дома будут приблизительными.</small>
+              </span>
+            </label>
           </div>
         )}
 

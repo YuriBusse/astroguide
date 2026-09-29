@@ -44,6 +44,7 @@ function Home({ onNavigate }) {
         <span className="eyebrow">ASTROGUIDE</span>
         <h1 className="home-hero__title">Твоя карта. Твои звёзды. Твоя история.</h1>
         <p className="home-hero__text">Точный расчёт по Swiss Ephemeris — прямо в Telegram.</p>
+        <p className="home-hero__hint">Укажи дату, время и город рождения — мы покажем карту и объясним основные символы простыми словами.</p>
       </header>
 
       <div className="home-cta">

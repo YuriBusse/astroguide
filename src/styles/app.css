@@ -772,6 +772,127 @@ p {
   background: var(--tg-theme-secondary-bg-color);
 }
 
+.birth-intro {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.birth-intro__mark {
+  flex: 0 0 auto;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.birth-intro strong,
+.birth-time-unknown strong {
+  display: block;
+  color: var(--text, #f7f2ff);
+  font-size: 14px;
+}
+
+.birth-intro p,
+.birth-time-unknown small {
+  margin: 5px 0 0;
+  color: var(--muted, #aaa1bb);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.birth-time-unknown {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.birth-time-unknown input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--accent, #b58cff);
+}
+
+.result-orientation {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(181, 140, 255, 0.12), rgba(255, 255, 255, 0.035));
+}
+
+.result-orientation__heading h2 {
+  margin: 6px 0 8px;
+  font-size: clamp(20px, 4vw, 28px);
+}
+
+.result-orientation__heading p,
+.result-orientation__note,
+.result-orientation__approx {
+  margin: 0;
+  color: var(--muted, #aaa1bb);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.result-orientation__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.result-orientation__grid article {
+  min-width: 0;
+  padding: 13px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.result-orientation__grid strong,
+.result-orientation__grid span {
+  display: block;
+}
+
+.result-orientation__grid strong {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.result-orientation__grid span {
+  color: var(--muted, #aaa1bb);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.result-orientation__approx {
+  margin-top: 14px;
+  color: #d8c7ff;
+}
+
+@media (max-width: 600px) {
+  .result-orientation__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .birth-intro,
+  .result-orientation {
+    padding: 13px;
+  }
+}
+
 .birth-field {
   display: flex;
   flex-direction: column;
