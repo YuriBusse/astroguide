@@ -4,6 +4,10 @@ import Home from "./screens/Home";
 import ChartBirth from "./screens/ChartBirth";
 import ComingSoon from "./screens/ComingSoon";
 import BottomNav from "./components/BottomNav";
+import AppButton from "./components/AppButton";
+import AccountPanel from "./components/AccountPanel";
+import Requisites from "./screens/Requisites";
+import TarotPage from "./screens/TarotPage";
 
 // ChartResult + Swiss Ephemeris загружаются только тогда,
 // когда пользователь действительно открыл результат.
@@ -30,7 +34,7 @@ const STUB_SCREENS = {
   }
 };
 
-const NAV_ROUTES = ["/", "/charts", "/tarot", "/profile"];
+const NAV_ROUTES = ["/", "/chart-birth", "/tarot", "/profile", "/chart-result"];
 
 function normalizeRoute(path) {
   if (!path || path === "/") return "/";
@@ -38,7 +42,7 @@ function normalizeRoute(path) {
 }
 
 function readHash() {
-  const raw = window.location.hash || "#/";
+  const raw = window.location.hash || window.location.pathname || "#/";
   const path = raw.startsWith("#") ? raw.slice(1) : raw;
   return normalizeRoute(path);
 }
@@ -72,17 +76,50 @@ function ChartResultFallback() {
   );
 }
 
+function ProfileScreen() {
+  const [accountOpen, setAccountOpen] = useState(false);
+
+  return (
+    <>
+      <section className="screen screen--stub">
+        <div className="stub-hero">
+          <span className="stub-hero__icon" aria-hidden="true">👤</span>
+        </div>
+        <h1 className="stub-hero__title">Профиль</h1>
+        <p className="stub-hero__text">Вход, сохранённые карты и статус Premium.</p>
+        <div className="stub-actions">
+          <AppButton variant="primary" onClick={() => setAccountOpen(true)}>Открыть аккаунт</AppButton>
+        </div>
+      </section>
+      <AccountPanel open={accountOpen} onClose={() => setAccountOpen(false)} />
+    </>
+  );
+}
+
 function App() {
   const [route, setRoute] = useState(readHash);
   const [pendingChart, setPendingChart] = useState(loadPendingChart);
 
   useEffect(() => {
     const onHash = () => setRoute(readHash());
+    const onOpenChart = (event) => {
+      const chart = event.detail;
+      if (!chart?.date || !chart?.time || !chart?.city) return;
+      setPendingChart(chart);
+      try {
+        localStorage.setItem(PENDING_KEY, JSON.stringify(chart));
+      } catch {
+        // Продолжаем работать в памяти.
+      }
+      navigateToChartResult();
+    };
 
     window.addEventListener("hashchange", onHash);
+    window.addEventListener("astroguide:open-chart", onOpenChart);
 
     return () => {
       window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("astroguide:open-chart", onOpenChart);
     };
   }, []);
 
@@ -98,6 +135,17 @@ function App() {
       if (window.location.hash !== next) {
         window.history.replaceState(null, "", next);
       }
+    } catch {
+      // URL не критичен — React state уже обновлён.
+    }
+  };
+
+  const navigateToChartResult = () => {
+    const normalized = "/chart-result";
+    setRoute(normalized);
+    try {
+      const next = `#${normalized}`;
+      if (window.location.hash !== next) window.history.replaceState(null, "", next);
     } catch {
       // URL не критичен — React state уже обновлён.
     }
@@ -136,6 +184,12 @@ function App() {
         />
       </Suspense>
     );
+  } else if (route === "/profile") {
+    screen = <ProfileScreen />;
+  } else if (route === "/tarot") {
+    screen = <TarotPage />;
+  } else if (route === "/requisites") {
+    screen = <Requisites />;
   } else {
     const stub = STUB_SCREENS[route.slice(1)];
 
