@@ -3,6 +3,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { getValidSession, authenticateTelegramWebApp } from "../utils/cloud";
 import { buildPremiumReport, PremiumReport } from "./PremiumReport";
+import ReportsList from "./reports/ReportsList";
+import ReportViewer from "./reports/ReportViewer";
+import { getReport, REPORT_CATALOG } from "../data/reports/reports";
 
 const freeItems = [
   "Натальная карта",
@@ -63,6 +66,8 @@ function PremiumSection({
   const [demoOpen, setDemoOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(false);
+  const [selectedReportId, setSelectedReportId] = useState(null);
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
   const [premiumChecking, setPremiumChecking] = useState(true);
   const [paymentState, setPaymentState] = useState("idle");
@@ -191,7 +196,7 @@ function PremiumSection({
             await syncPremium();
             setPaymentState("paid");
             localStorage.removeItem(PENDING_CHART_KEY);
-            setCheckoutOpen(true);
+            setReportsOpen(true);
             window.history.replaceState({}, "", window.location.pathname + window.location.hash);
             return;
           }
@@ -365,7 +370,7 @@ function PremiumSection({
                   await syncPremium();
                   window.dispatchEvent(new Event("astroguide:premium"));
                   setPaymentState("paid");
-                  setCheckoutOpen(true);
+                  setReportsOpen(true);
                   paymentLockRef.current = false;
                   return;
                 }
@@ -473,7 +478,7 @@ function PremiumSection({
         <div className="premium-cta__actions">
           <button className="premium-demo" type="button" onClick={() => setDemoOpen(true)}>Посмотреть пример</button>
           {premiumUnlocked ? (
-            <button className="premium-buy premium-buy--unlocked" type="button" onClick={() => setReportOpen(true)}>✓ Открыть Premium</button>
+            <button className="premium-buy premium-buy--unlocked" type="button" onClick={() => { setSelectedReportId(null); setReportsOpen(true); }}>✓ Открыть Premium-отчёты</button>
           ) : (
             <button className="premium-buy" type="button" onClick={() => setCheckoutOpen(true)} disabled={premiumChecking}>
               {premiumChecking ? "Проверяем доступ…" : "Получить полный разбор — 299 ₽"} {!premiumChecking && <span>→</span>}
@@ -521,6 +526,28 @@ function PremiumSection({
         </div>
       ), document.body)}
 
+      {reportsOpen && typeof document !== "undefined" && createPortal((
+        <div className="premium-modal" role="dialog" aria-modal="true" aria-labelledby="reports-list-title">
+          <div className="premium-modal__backdrop" onClick={() => { setReportsOpen(false); setSelectedReportId(null); }} />
+          <div className="premium-modal__card premium-reports-modal">
+            <button className="premium-modal__close" type="button" onClick={() => { setReportsOpen(false); setSelectedReportId(null); }} aria-label="Закрыть">×</button>
+            {selectedReportId ? (
+              <ReportViewer
+                report={getReport(selectedReportId)}
+                chartData={chart}
+                onBack={() => setSelectedReportId(null)}
+              />
+            ) : (
+              <ReportsList
+                reports={REPORT_CATALOG}
+                onSelect={setSelectedReportId}
+                onOpenFullReport={() => { setReportsOpen(false); setReportOpen(true); }}
+              />
+            )}
+          </div>
+        </div>
+      ), document.body)}
+
       {checkoutOpen && typeof document !== "undefined" && createPortal((
         <div className="premium-modal" role="dialog" aria-modal="true" aria-labelledby="premium-checkout-title">
           <div className="premium-modal__backdrop" onClick={() => setCheckoutOpen(false)} />
@@ -546,7 +573,7 @@ function PremiumSection({
               <div className="payment-feedback payment-feedback--success" role="status" aria-live="polite">
                 <strong>Premium активирован</strong>
                 <span>Сервер подтвердил оплату. Полный разбор уже доступен.</span>
-                <button type="button" onClick={() => { setCheckoutOpen(false); setReportOpen(true); }}>Продолжить</button>
+                <button type="button" onClick={() => { setCheckoutOpen(false); setReportsOpen(true); }}>Продолжить</button>
               </div>
             )}
             {paymentState !== "paid" && <div className="checkout-payment-methods">
