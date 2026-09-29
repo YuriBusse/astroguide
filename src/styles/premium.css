@@ -16,6 +16,9 @@
   --astro-accent: #c7a6ff;
   --astro-gold: #f2c66d;
   --astro-pink: #dfb5ff;
+  --astro-radius-lg: var(--ag-radius-lg, 18px);
+  --astro-radius-md: var(--ag-radius-md, 14px);
+  --astro-focus: var(--ag-focus-ring, 0 0 0 3px rgba(199,166,255,.28));
   color: var(--astro-text);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
@@ -442,7 +445,8 @@
   z-index: 100;
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  overscroll-behavior: contain;
 }
 
 .premium-modal__backdrop {
@@ -456,8 +460,11 @@
   position: relative;
   z-index: 2;
   width: min(100%,620px);
-  max-height: min(88vh,760px);
+  max-height: min(88vh, 760px);
+  max-height: min(88dvh, 760px);
   overflow: auto;
+  overscroll-behavior: contain;
+  min-width: 0;
   padding: 32px;
   border: 1px solid rgba(199,166,255,.2);
   border-radius: 26px;
@@ -491,6 +498,16 @@
   background: rgba(255,255,255,.06);
   font-size: 23px;
   cursor: pointer;
+  transition: background-color 0.16s ease, transform 0.16s ease;
+}
+
+.premium-modal__close:hover {
+  background: rgba(255,255,255,.12);
+}
+
+.premium-modal__close:focus-visible {
+  outline: none;
+  box-shadow: var(--astro-focus);
 }
 
 .premium-demo-card {
@@ -1798,5 +1815,58 @@
 
   .premium-cta {
     padding: 17px;
+  }
+}
+
+/* --- Общие состояния активного Premium-слоя --- */
+.premium-section,
+.premium-modal__card,
+.premium-checkout,
+.comparison-card,
+.premium-feature,
+.premium-cta {
+  min-width: 0;
+}
+
+.premium-section button,
+.premium-modal button,
+.premium-checkout button {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.premium-section button:focus-visible,
+.premium-modal button:focus-visible,
+.premium-checkout button:focus-visible,
+.premium-section a:focus-visible,
+.premium-modal a:focus-visible {
+  outline: none;
+  box-shadow: var(--astro-focus);
+}
+
+.premium-section input,
+.premium-section select,
+.premium-modal input,
+.premium-modal select,
+.premium-checkout input,
+.premium-checkout select {
+  max-width: 100%;
+}
+
+@media (max-width: 380px) {
+  .premium-section,
+  .premium-checkout {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .premium-modal {
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
+
+  .premium-modal__card {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }

@@ -22,8 +22,14 @@
   --ag-radius-lg: 18px;
   --ag-radius-md: 14px;
   --ag-radius-sm: 12px;
+  --ag-radius-xs: 10px;
   --ag-space: 16px;
-  --ag-nav-h: 64px;
+  --ag-nav-h: 72px;
+  --ag-border: color-mix(in srgb, var(--tg-theme-hint-color) 18%, transparent);
+  --ag-border-strong: color-mix(in srgb, var(--tg-theme-button-color) 38%, transparent);
+  --ag-surface-raised: color-mix(in srgb, var(--tg-theme-secondary-bg-color) 82%, white 4%);
+  --ag-shadow: 0 14px 34px rgba(9, 5, 20, 0.22);
+  --ag-focus-ring: 0 0 0 3px color-mix(in srgb, var(--tg-theme-button-color) 28%, transparent);
 }
 
 /* Светлая палитра — активируется через data-color-scheme (Telegram) либо
@@ -101,6 +107,7 @@ p {
 /* --- Каркас приложения --- */
 .app-shell {
   min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100vh);
   display: flex;
   flex-direction: column;
   background:
@@ -115,13 +122,73 @@ p {
   flex: 1 1 auto;
   padding: var(--ag-space);
   padding-bottom: calc(var(--ag-nav-h) + var(--ag-space) + 12px);
+  padding-bottom: calc(var(--ag-nav-h) + var(--ag-space) + 12px + env(safe-area-inset-bottom));
 }
 
 /* --- Общие элементы экранов --- */
 .screen {
+  width: 100%;
+  min-width: 0;
   max-width: 480px;
   margin: 0 auto;
   animation: ag-fade-up 0.18s ease both;
+}
+
+.requisites-page {
+  padding-top: 12px;
+}
+
+.requisites-page__hero {
+  margin-bottom: 20px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: var(--ag-radius-lg);
+  background: linear-gradient(145deg, rgba(45, 32, 72, .92), rgba(21, 16, 36, .96));
+}
+
+.requisites-page__hero h1 {
+  margin-top: 8px;
+  font-size: clamp(28px, 7vw, 40px);
+  letter-spacing: -.04em;
+}
+
+.requisites-page__hero p {
+  margin-top: 8px;
+  color: var(--tg-theme-hint-color);
+  font-size: 14px;
+}
+
+.requisites-card {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: var(--ag-radius-lg);
+  background: rgba(255, 255, 255, .08);
+}
+
+.requisites-row {
+  display: grid;
+  gap: 5px;
+  padding: 16px 18px;
+  background: rgba(28, 22, 45, .96);
+}
+
+.requisites-row span {
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+}
+
+.requisites-row strong {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+
+.requisites-note {
+  margin: 14px 4px 0;
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 @keyframes ag-fade-up {
@@ -213,7 +280,17 @@ p {
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-button:hover:not(.is-disabled) {
+  box-shadow: 0 10px 28px -16px var(--tg-theme-button-color);
+}
+
+.app-button:focus-visible {
+  outline: none;
+  box-shadow: var(--ag-focus-ring);
 }
 
 .app-button--primary {
@@ -278,13 +355,15 @@ p {
   gap: 12px;
   width: 100%;
   min-height: 72px;
+  min-width: 0;
   padding: 14px 14px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: var(--ag-radius-lg);
   background: var(--tg-theme-secondary-bg-color);
   color: var(--tg-theme-text-color);
   text-align: left;
-  transition: transform 0.12s ease, opacity 0.12s ease;
+  box-shadow: var(--ag-shadow);
+  transition: transform 0.16s ease, opacity 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
 }
 
 .app-card--pressable {
@@ -293,6 +372,15 @@ p {
 
 .app-card--pressable:active {
   transform: scale(0.98);
+}
+
+.app-card--pressable:hover {
+  border-color: var(--ag-border-strong);
+}
+
+.app-card--pressable:focus-visible {
+  outline: none;
+  box-shadow: var(--ag-focus-ring), var(--ag-shadow);
 }
 
 .app-card__icon {
@@ -360,19 +448,22 @@ p {
   display: flex;
   align-items: stretch;
   justify-content: space-around;
+  min-height: var(--ag-nav-h);
   padding: 8px 6px;
-  padding-bottom: 12px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
   /* Сплошной фон — fallback для WebView без color-mix(), чтобы навигация
      всегда была непрозрачной и контент под ней не «просвечивал». */
   background: var(--tg-theme-bg-color);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid color-mix(in srgb, var(--tg-theme-hint-color) 22%, transparent);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .bottom-nav__item {
   flex: 1 1 0;
   min-height: 48px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -386,6 +477,22 @@ p {
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
+  transition: color 0.16s ease, background-color 0.16s ease, transform 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav__item:hover,
+.bottom-nav__item:focus-visible {
+  background: color-mix(in srgb, var(--tg-theme-button-color) 10%, transparent);
+}
+
+.bottom-nav__item:active {
+  transform: scale(0.96);
+}
+
+.bottom-nav__item:focus-visible {
+  outline: none;
+  box-shadow: inset var(--ag-focus-ring);
 }
 
 .bottom-nav__item.is-active {
@@ -493,6 +600,113 @@ p {
 .stub-actions {
   margin-top: 26px;
 }
+
+/* --- Аккаунт и сохранённые карты --- */
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  overflow-y: auto;
+  padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+}
+
+.account-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 3, 10, .78);
+  backdrop-filter: blur(10px);
+}
+
+.account-modal__card {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: min(720px, calc(100dvh - 36px));
+  margin: auto 0;
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 26px;
+  background: linear-gradient(145deg, #211936, #0d0a18);
+  box-shadow: 0 28px 80px rgba(0,0,0,.42);
+  color: var(--tg-theme-text-color);
+}
+
+.account-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  color: var(--tg-theme-hint-color);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.account-modal__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-right: 38px;
+}
+
+.account-modal__top h2 { margin: 8px 0 6px; font-size: 28px; }
+.account-modal__top p { color: var(--tg-theme-hint-color); font-size: 13px; line-height: 1.45; }
+.account-status { color: var(--tg-theme-hint-color); font-size: 11px; white-space: nowrap; }
+.account-status--premium { color: #f2c66d; }
+
+.account-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 22px 0 16px;
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.06);
+}
+
+.account-tabs button {
+  flex: 1;
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--tg-theme-hint-color);
+  cursor: pointer;
+}
+
+.account-tabs button.is-active { background: rgba(170,112,232,.2); color: var(--tg-theme-text-color); }
+.account-form { display: grid; gap: 13px; }
+.account-form label { display: grid; gap: 6px; color: var(--tg-theme-hint-color); font-size: 12px; }
+.account-form input { width: 100%; padding: 12px 13px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: rgba(255,255,255,.06); color: var(--tg-theme-text-color); outline: none; }
+.account-form input:focus { border-color: rgba(170,112,232,.72); box-shadow: var(--ag-focus-ring); }
+.account-submit { min-height: 46px; border: 0; border-radius: 13px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); font-weight: 800; cursor: pointer; }
+.account-submit:disabled { opacity: .55; cursor: wait; }
+.account-signed { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0; padding: 14px; border-radius: 14px; background: rgba(255,255,255,.06); }
+.account-signed strong { display: block; margin-top: 5px; overflow-wrap: anywhere; }
+.account-logout { border: 0; background: transparent; color: var(--tg-theme-button-color); cursor: pointer; }
+.account-message, .account-error { margin-top: 14px; padding: 11px 13px; border-radius: 12px; font-size: 12px; line-height: 1.45; }
+.account-message { background: rgba(123,213,185,.1); color: #b9f0d9; }
+.account-error { background: rgba(255,105,132,.1); color: #ffb6c4; }
+.saved-charts { margin-top: 24px; }
+.saved-charts__heading { display: flex; justify-content: space-between; gap: 12px; align-items: end; margin-bottom: 12px; }
+.saved-charts__heading h3 { margin-top: 6px; font-size: 18px; }
+.saved-charts__heading > span { color: var(--tg-theme-hint-color); }
+.saved-chart-list { display: grid; gap: 8px; }
+.saved-chart { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; background: rgba(255,255,255,.04); }
+.saved-chart__icon { color: #f2c66d; }
+.saved-chart__body { min-width: 0; flex: 1; display: grid; gap: 4px; }
+.saved-chart__body span, .saved-charts__empty, .account-note { color: var(--tg-theme-hint-color); font-size: 11px; line-height: 1.45; }
+.saved-chart__actions { display: flex; align-items: center; gap: 8px; }
+.saved-chart__open, .saved-chart__delete { border: 0; background: transparent; color: var(--tg-theme-button-color); cursor: pointer; }
+.saved-chart__delete { color: #ff9caf; font-size: 18px; }
+.saved-chart__badge { color: #f2c66d; font-size: 10px; }
+.saved-charts__empty { padding: 14px; border-radius: 13px; background: rgba(255,255,255,.04); }
+.account-note { display: block; margin-top: 18px; }
 
 /* --- Форма рождения (ChartBirth) --- */
 .birth-progress {
@@ -736,6 +950,8 @@ p {
   text-align: center;
   border-radius: var(--ag-radius-lg);
   background: var(--tg-theme-secondary-bg-color);
+  border: 1px solid var(--ag-border);
+  box-shadow: var(--ag-shadow);
 }
 
 .calc-card strong {
@@ -791,6 +1007,8 @@ p {
   text-align: center;
   border-radius: var(--ag-radius-lg);
   background: var(--tg-theme-secondary-bg-color);
+  border: 1px solid var(--ag-border);
+  box-shadow: var(--ag-shadow);
 }
 
 .empty-note-card__icon {
@@ -934,6 +1152,17 @@ p {
 
 .result-actions {
   margin-top: 12px;
+}
+
+.result-actions--top {
+  margin: 14px 0 4px;
+}
+
+.result-save-error {
+  display: block;
+  margin-top: 8px;
+  color: var(--ag-danger);
+  font-size: 12px;
 }
 /* ============================================================
    Переиспользуемые компоненты старого проекта
