@@ -2506,6 +2506,312 @@ p {
   border: 0;
 }
 
+/* --- Профиль и история карт --- */
+.profile-page {
+  max-width: 560px;
+}
+
+.profile-page--guest {
+  display: grid;
+  justify-items: center;
+  padding-top: 48px;
+  text-align: center;
+}
+
+.profile-guest__icon {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tg-theme-button-color) 17%, var(--tg-theme-secondary-bg-color));
+  box-shadow: 0 0 0 9px color-mix(in srgb, var(--tg-theme-button-color) 10%, transparent);
+  font-size: 34px;
+}
+
+.profile-page--guest h1 {
+  margin-top: 10px;
+  font-size: clamp(25px, 7vw, 32px);
+  letter-spacing: -0.03em;
+}
+
+.profile-page--guest p {
+  max-width: 300px;
+  margin: 10px auto 22px;
+  color: var(--tg-theme-hint-color);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.profile-page--guest .app-button {
+  max-width: 300px;
+}
+
+.profile-header-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 10px 0 22px;
+  padding: 15px;
+  border: 1px solid var(--ag-border);
+  border-radius: var(--ag-radius-lg);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--tg-theme-button-color) 12%, var(--tg-theme-secondary-bg-color)), var(--tg-theme-secondary-bg-color));
+  box-shadow: var(--ag-shadow);
+}
+
+.profile-header-card__avatar {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--ag-gold) 22%, transparent);
+  color: var(--ag-gold);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.profile-header-card__body {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 3px;
+}
+
+.profile-header-card__body strong,
+.profile-header-card__body span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-header-card__body strong {
+  font-size: 15px;
+}
+
+.profile-header-card__body span {
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+}
+
+.profile-premium-badge {
+  flex: 0 0 auto;
+  max-width: 132px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: var(--tg-theme-hint-color);
+  background: color-mix(in srgb, var(--tg-theme-hint-color) 12%, transparent);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.profile-premium-badge--active {
+  color: var(--ag-gold);
+  background: color-mix(in srgb, var(--ag-gold) 16%, transparent);
+}
+
+.profile-premium-badge--checking {
+  color: var(--tg-theme-button-color);
+}
+
+.profile-section {
+  margin-top: 24px;
+}
+
+.profile-section__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.profile-section__heading h2 {
+  margin-top: 5px;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.profile-section__heading > b {
+  color: var(--tg-theme-hint-color);
+  font-size: 14px;
+}
+
+.profile-chart-list {
+  display: grid;
+  gap: 9px;
+}
+
+.profile-chart-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--ag-border);
+  border-radius: var(--ag-radius-md);
+  background: var(--tg-theme-secondary-bg-color);
+  box-shadow: var(--ag-shadow);
+}
+
+.profile-chart-card__icon {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--ag-gold) 16%, transparent);
+  color: var(--ag-gold);
+}
+
+.profile-chart-card__body {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 3px;
+}
+
+.profile-chart-card__body strong,
+.profile-chart-card__body span,
+.profile-chart-card__body small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-chart-card__body strong {
+  font-size: 14px;
+}
+
+.profile-chart-card__body span,
+.profile-chart-card__body small {
+  color: var(--tg-theme-hint-color);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.profile-chart-card__open {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid var(--ag-border-strong);
+  border-radius: var(--ag-radius-sm);
+  background: color-mix(in srgb, var(--tg-theme-button-color) 10%, transparent);
+  color: var(--tg-theme-button-color);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.profile-chart-card__open:hover,
+.profile-chart-card__open:focus-visible {
+  background: color-mix(in srgb, var(--tg-theme-button-color) 18%, transparent);
+}
+
+.profile-chart-card__open:focus-visible {
+  outline: none;
+  box-shadow: var(--ag-focus-ring);
+}
+
+.profile-empty,
+.profile-state,
+.profile-loading {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 25px 18px;
+  border: 1px solid var(--ag-border);
+  border-radius: var(--ag-radius-lg);
+  background: var(--tg-theme-secondary-bg-color);
+  text-align: center;
+}
+
+.profile-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 3px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--ag-gold) 14%, transparent);
+  color: var(--ag-gold);
+}
+
+.profile-empty strong,
+.profile-loading strong,
+.profile-state strong {
+  font-size: 14px;
+}
+
+.profile-empty p,
+.profile-loading small,
+.profile-state span {
+  max-width: 340px;
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.profile-empty .app-button {
+  margin-top: 7px;
+}
+
+.profile-loading {
+  min-height: 190px;
+  align-content: center;
+}
+
+.profile-state--error {
+  align-items: center;
+  border-color: color-mix(in srgb, var(--ag-danger) 38%, transparent);
+  background: color-mix(in srgb, var(--ag-danger) 8%, var(--tg-theme-secondary-bg-color));
+}
+
+.profile-state--error button {
+  min-height: 36px;
+  margin-top: 4px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--ag-radius-sm);
+  background: color-mix(in srgb, var(--ag-danger) 16%, transparent);
+  color: var(--ag-danger);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.profile-actions {
+  display: grid;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.profile-actions .profile-section__heading {
+  margin-bottom: 2px;
+}
+
+@media (max-width: 380px) {
+  .profile-header-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .profile-premium-badge {
+    margin-left: 60px;
+  }
+
+  .profile-chart-card {
+    align-items: flex-start;
+  }
+
+  .profile-chart-card__open {
+    align-self: center;
+  }
+}
+
 @media (max-width: 430px) {
   .tarot-intro {
     align-items: flex-start;

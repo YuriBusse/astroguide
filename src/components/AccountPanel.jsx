@@ -10,7 +10,6 @@ import {
 } from "../utils/cloud";
 
 const STORAGE_KEY = "astroguide_saved_charts";
-const PREMIUM_KEY = "astroguide_premium";
 
 function readCharts() {
   try {
@@ -33,7 +32,7 @@ function normalizeCloudChart(chart) {
   };
 }
 
-function AccountPanel({ open, onClose }) {
+function AccountPanel({ open, onClose, onAuthChange = null }) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -46,11 +45,12 @@ function AccountPanel({ open, onClose }) {
   const [loading, setLoading] = useState(false);
 
   const refresh = async () => {
-    setPremium(localStorage.getItem(PREMIUM_KEY) === "true");
+    setPremium(false);
     if (cloudConfigured && getSession()) {
       try {
         const cloudCharts = await getCloudCharts();
         setCharts((cloudCharts || []).map(normalizeCloudChart));
+        setPremium((cloudCharts || []).some((chart) => Boolean(chart.premium)));
         return;
       } catch (err) {
         console.error(err);
@@ -111,6 +111,7 @@ function AccountPanel({ open, onClose }) {
             : "Вы вошли в аккаунт.")
       );
       await refresh();
+      onAuthChange?.();
     } catch (err) {
       setError(err.message || "Не удалось выполнить операцию.");
     } finally {
@@ -138,8 +139,11 @@ function AccountPanel({ open, onClose }) {
   const logout = () => {
     signOut();
     setSession(null);
-    setCharts(readCharts());
+    setCharts([]);
+    setPremium(false);
     setMessage("Вы вышли из аккаунта.");
+    window.dispatchEvent(new Event("astroguide:auth"));
+    onAuthChange?.();
   };
 
   return (

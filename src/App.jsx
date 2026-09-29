@@ -4,8 +4,7 @@ import Home from "./screens/Home";
 import ChartBirth from "./screens/ChartBirth";
 import ComingSoon from "./screens/ComingSoon";
 import BottomNav from "./components/BottomNav";
-import AppButton from "./components/AppButton";
-import AccountPanel from "./components/AccountPanel";
+import ProfilePage from "./components/profile/ProfilePage";
 import Requisites from "./screens/Requisites";
 import TarotPage from "./screens/TarotPage";
 
@@ -73,26 +72,6 @@ function ChartResultFallback() {
         <p>Загружаем расчёт карты…</p>
       </div>
     </section>
-  );
-}
-
-function ProfileScreen() {
-  const [accountOpen, setAccountOpen] = useState(false);
-
-  return (
-    <>
-      <section className="screen screen--stub">
-        <div className="stub-hero">
-          <span className="stub-hero__icon" aria-hidden="true">👤</span>
-        </div>
-        <h1 className="stub-hero__title">Профиль</h1>
-        <p className="stub-hero__text">Вход, сохранённые карты и статус Premium.</p>
-        <div className="stub-actions">
-          <AppButton variant="primary" onClick={() => setAccountOpen(true)}>Открыть аккаунт</AppButton>
-        </div>
-      </section>
-      <AccountPanel open={accountOpen} onClose={() => setAccountOpen(false)} />
-    </>
   );
 }
 
@@ -185,7 +164,7 @@ function App() {
       </Suspense>
     );
   } else if (route === "/profile") {
-    screen = <ProfileScreen />;
+    screen = <ProfilePage onNavigate={navigate} />;
   } else if (route === "/tarot") {
     screen = <TarotPage />;
   } else if (route === "/requisites") {
