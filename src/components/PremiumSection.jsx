@@ -27,6 +27,8 @@ const SERVER_URL = import.meta.env.DEV
   ? ""
   : import.meta.env.VITE_ASTROGUIDE_SERVER_URL || "";
 const PENDING_CHART_KEY = "astroguide_pending_chart";
+const DEV_PREMIUM_KEY = "astroguide_dev_premium_demo";
+const DEV_PREMIUM_DEMO = import.meta.env.DEV;
 
 function getFriendlyPaymentError(error, fallback = "Не удалось начать оплату. Попробуйте ещё раз.") {
   const message = String(error?.message || "");
@@ -67,6 +69,9 @@ function PremiumSection({
   const [reportsOpen, setReportsOpen] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
+  const [devPremiumDemo, setDevPremiumDemo] = useState(() => (
+    DEV_PREMIUM_DEMO && localStorage.getItem(DEV_PREMIUM_KEY) === "true"
+  ));
   const [premiumChecking, setPremiumChecking] = useState(true);
   const [paymentState, setPaymentState] = useState("idle");
   const [paymentError, setPaymentError] = useState("");
@@ -79,6 +84,7 @@ function PremiumSection({
     mcLongitude,
     aspects
   }), [planetLongitudes, planetHouses, ascendantLongitude, mcLongitude, aspects]);
+  const premiumAvailable = premiumUnlocked || devPremiumDemo;
 
   const syncPremium = async () => {
     const session = await getValidSession();
@@ -123,14 +129,14 @@ function PremiumSection({
 
   useEffect(() => {
     if (!reportsRequested || premiumChecking) return;
-    if (premiumUnlocked) {
+    if (premiumAvailable) {
       setSelectedReportId(null);
       setReportsOpen(true);
     } else {
       setCheckoutOpen(true);
     }
     onReportsRequestHandled?.();
-  }, [reportsRequested, premiumChecking, premiumUnlocked, onReportsRequestHandled]);
+  }, [reportsRequested, premiumChecking, premiumAvailable, onReportsRequestHandled]);
 
   const teasers = useMemo(() => [
     {
@@ -218,6 +224,16 @@ function PremiumSection({
     return () => { cancelled = true; };
   }, []);
 
+  const startDevPremiumDemo = () => {
+    if (!DEV_PREMIUM_DEMO) return;
+    localStorage.setItem(DEV_PREMIUM_KEY, "true");
+    setDevPremiumDemo(true);
+    setPaymentError("");
+    setPaymentState("paid");
+    setCheckoutOpen(true);
+    paymentLockRef.current = false;
+  };
+
   const startPayment = async () => {
     if (paymentLockRef.current) return;
     paymentLockRef.current = true;
@@ -286,10 +302,18 @@ function PremiumSection({
 
 
   const startSbpPayment = async () => {
+    if (DEV_PREMIUM_DEMO) {
+      startDevPremiumDemo();
+      return;
+    }
     await startPayment();
   };
 
   const startStarsPayment = async () => {
+    if (DEV_PREMIUM_DEMO) {
+      startDevPremiumDemo();
+      return;
+    }
     if (paymentLockRef.current) return;
     paymentLockRef.current = true;
     setPaymentError("");
@@ -412,6 +436,7 @@ function PremiumSection({
       <div className="premium-section__top">
         <div>
           <span className="eyebrow">ASTROGUIDE PREMIUM</span>
+          {DEV_PREMIUM_DEMO && <div className="premium-dev-indicator">DEV: Premium demo · без реальной оплаты</div>}
           <h2>Бесплатно — познакомиться с картой. Premium — понять себя глубже.</h2>
           <p>Мы специально оставили бесплатную часть короткой: вы получаете реальные данные и первый взгляд, а Premium собирает их в цельную историю именно вашей карты.</p>
         </div>
@@ -472,7 +497,7 @@ function PremiumSection({
         </div>
         <div className="premium-cta__actions">
           <button className="premium-demo" type="button" onClick={() => setDemoOpen(true)}>Посмотреть пример</button>
-          {premiumUnlocked ? (
+          {premiumAvailable ? (
             <button className="premium-buy premium-buy--unlocked" type="button" onClick={() => { setSelectedReportId(null); setReportsOpen(true); }}>✓ Открыть Premium-отчёты</button>
           ) : (
             <button className="premium-buy" type="button" onClick={() => setCheckoutOpen(true)} disabled={premiumChecking}>
@@ -486,7 +511,9 @@ function PremiumSection({
         <div className="payment-status-banner">Проверяем оплату… Это может занять несколько секунд.</div>
       )}
       {paymentState === "paid" && (
-        <div className="payment-status-banner payment-status-banner--success">✓ Premium активирован. Полный разбор доступен.</div>
+        <div className="payment-status-banner payment-status-banner--success">
+          ✓ {devPremiumDemo ? "DEV: Premium demo активен. Отчёты доступны локально." : "Premium активирован. Полный разбор доступен."}
+        </div>
       )}
 
       <div className="astro-disclaimer">
@@ -549,6 +576,7 @@ function PremiumSection({
           <div className="premium-modal__card premium-checkout">
             <button className="premium-modal__close" type="button" onClick={() => setCheckoutOpen(false)} aria-label="Закрыть">×</button>
             <span className="eyebrow">ASTROGUIDE PREMIUM</span>
+            {DEV_PREMIUM_DEMO && <div className="premium-dev-indicator">DEV: Premium demo · без реальной оплаты</div>}
             <h3 id="premium-checkout-title">Полный разбор вашей натальной карты</h3>
             <p>Один раз оплачиваете 299 ₽ — без подписки. После оплаты полный персональный анализ будет доступен в вашем аккаунте.</p>
             <div className="checkout-summary">
@@ -566,7 +594,7 @@ function PremiumSection({
             {paymentState === "paid" && (
               <div className="payment-feedback payment-feedback--success" role="status" aria-live="polite">
                 <strong>Premium активирован</strong>
-                <span>Сервер подтвердил оплату. Полный разбор уже доступен.</span>
+                <span>{devPremiumDemo ? "Локальная demo-активация. Реальный платёж не создавался." : "Сервер подтвердил оплату. Полный разбор уже доступен."}</span>
                 <button type="button" onClick={() => { setCheckoutOpen(false); setReportsOpen(true); }}>Продолжить</button>
               </div>
             )}
