@@ -1,7 +1,7 @@
 import "../styles/premium.css";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { cloudConfigured, getValidSession } from "../utils/cloud";
+import { getValidSession, authenticateTelegramWebApp } from "../utils/cloud";
 import { buildPremiumReport, PremiumReport } from "./PremiumReport";
 
 const freeItems = [
@@ -24,8 +24,28 @@ const premiumItems = [
   "Полный структурированный отчёт"
 ];
 
-const SERVER_URL = import.meta.env.VITE_ASTROGUIDE_SERVER_URL || "";
+const SERVER_URL = import.meta.env.DEV
+  ? ""
+  : import.meta.env.VITE_ASTROGUIDE_SERVER_URL || "";
 const PENDING_CHART_KEY = "astroguide_pending_chart";
+
+function getFriendlyPaymentError(error, fallback = "Не удалось начать оплату. Попробуйте ещё раз.") {
+  const message = String(error?.message || "");
+  if (!message || /fetch|json|500|401|403|404|network|failed/i.test(message)) return fallback;
+  if (/отмен/i.test(message)) return "Оплата отменена. Вы можете попробовать ещё раз.";
+  if (/telegram/i.test(message)) return "Не удалось подтвердить оплату Telegram Stars. Попробуйте ещё раз.";
+  return fallback;
+}
+
+async function readPaymentResponse(response, fallback) {
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    const error = new Error(data?.message || fallback);
+    error.code = data?.code;
+    throw error;
+  }
+  return data || {};
+}
 
 function PremiumSection({
   zodiac,
@@ -47,6 +67,7 @@ function PremiumSection({
   const [premiumChecking, setPremiumChecking] = useState(true);
   const [paymentState, setPaymentState] = useState("idle");
   const [paymentError, setPaymentError] = useState("");
+  const paymentLockRef = useRef(false);
 
   const premiumReport = useMemo(() => buildPremiumReport({
     planetLongitudes,
@@ -58,7 +79,7 @@ function PremiumSection({
 
   const syncPremium = async () => {
     const session = await getValidSession();
-    if (!cloudConfigured || !session?.access_token || !chart?.date || !chart?.time || !chart?.city) {
+    if (!session?.access_token || !chart?.date || !chart?.time || !chart?.city) {
       setPremiumUnlocked(false);
       setPremiumChecking(false);
       return;
@@ -163,20 +184,21 @@ function PremiumSection({
           const response = await fetch(`${SERVER_URL}/api/payment-status?orderId=${encodeURIComponent(orderId)}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          const data = await response.json();
+          const data = await response.json().catch(() => ({}));
           if (data.status === "paid") {
             localStorage.setItem("astroguide_premium", "true");
             window.dispatchEvent(new Event("astroguide:premium"));
             await syncPremium();
             setPaymentState("paid");
             localStorage.removeItem(PENDING_CHART_KEY);
-            setReportOpen(true);
+            setCheckoutOpen(true);
             window.history.replaceState({}, "", window.location.pathname + window.location.hash);
             return;
           }
           if (data.status === "cancelled" || data.status === "refunded") {
             setPaymentState("failed");
-            setPaymentError("Платёж не был завершён.");
+            setPaymentError("Платёж не был завершён. Попробуйте ещё раз.");
+            setCheckoutOpen(true);
             localStorage.removeItem(PENDING_CHART_KEY);
             window.history.replaceState({}, "", window.location.pathname + window.location.hash);
             return;
@@ -186,27 +208,31 @@ function PremiumSection({
         }
         await new Promise((resolve) => setTimeout(resolve, 2500));
       }
+      if (!cancelled) {
+        setPaymentState("error");
+        setPaymentError("Платёж ещё обрабатывается. Попробуйте обновить статус через несколько секунд.");
+        setCheckoutOpen(true);
+      }
     };
     poll();
     return () => { cancelled = true; };
   }, []);
 
   const startPayment = async () => {
+    if (paymentLockRef.current) return;
+    paymentLockRef.current = true;
     setPaymentError("");
-    const session = await getValidSession();
-
-    if (!cloudConfigured || !session?.access_token) {
-      setPaymentError("Для покупки Premium сначала войдите или зарегистрируйтесь через «Мои карты».");
-      return;
-    }
-
-    if (!chart?.date || !chart?.time || !chart?.city) {
-      setPaymentError("Не удалось определить данные текущей карты. Пересчитайте карту и попробуйте ещё раз.");
-      return;
-    }
-
-    setPaymentState("creating");
     try {
+      let session = await getValidSession();
+      if (!session?.access_token && window.Telegram?.WebApp?.initData) {
+        session = await authenticateTelegramWebApp(window.Telegram.WebApp.initData);
+      }
+
+      if (!chart?.date || !chart?.time || !chart?.city) {
+        throw new Error("Не удалось определить данные текущей карты.");
+      }
+
+      setPaymentState("creating");
       localStorage.setItem(PENDING_CHART_KEY, JSON.stringify({
         date: chart.date,
         time: chart.time,
@@ -219,7 +245,7 @@ function PremiumSection({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
         },
         body: JSON.stringify({
           returnUrl: `${window.location.origin}${window.location.pathname}?astroguide_order=ORDER_ID`,
@@ -233,8 +259,15 @@ function PremiumSection({
           }
         })
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Не удалось создать платёж.");
+      const data = await readPaymentResponse(response, "Не удалось создать платёж.");
+      if (data.alreadyPremium) {
+        await syncPremium();
+        setPremiumUnlocked(true);
+        setPaymentState("paid");
+        setCheckoutOpen(true);
+        paymentLockRef.current = false;
+        return;
+      }
 
       setPaymentState("redirecting");
       const returnUrl = `${window.location.origin}${window.location.pathname}?astroguide_order=${encodeURIComponent(data.orderId)}`;
@@ -246,7 +279,8 @@ function PremiumSection({
     } catch (error) {
       console.error(error);
       setPaymentState("error");
-      setPaymentError(error.message || "Не удалось начать оплату.");
+      setPaymentError(getFriendlyPaymentError(error));
+      paymentLockRef.current = false;
     }
   };
 
@@ -256,28 +290,25 @@ function PremiumSection({
   };
 
   const startStarsPayment = async () => {
+    if (paymentLockRef.current) return;
+    paymentLockRef.current = true;
     setPaymentError("");
-    const session = await getValidSession();
-
-    if (!cloudConfigured || !session?.access_token) {
-      setPaymentError("Для покупки Premium сначала войдите или зарегистрируйтесь через «Мои карты».");
-      return;
-    }
-
-    if (!chart?.date || !chart?.time || !chart?.city) {
-      setPaymentError("Не удалось определить данные текущей карты. Пересчитайте карту и попробуйте ещё раз.");
-      return;
-    }
-
-    const telegramWebApp = window.Telegram?.WebApp;
-    if (!telegramWebApp?.openInvoice) {
-      setPaymentError("Оплата Stars доступна только внутри Telegram.");
-      return;
-    }
-
-    setPaymentState("creating");
-
     try {
+      let session = await getValidSession();
+      if (!session?.access_token && window.Telegram?.WebApp?.initData) {
+        session = await authenticateTelegramWebApp(window.Telegram.WebApp.initData);
+      }
+
+      if (!chart?.date || !chart?.time || !chart?.city) {
+        throw new Error("Не удалось определить данные текущей карты.");
+      }
+
+      const telegramWebApp = window.Telegram?.WebApp;
+      if (!telegramWebApp?.openInvoice) {
+        throw new Error("Оплата Stars доступна только внутри Telegram.");
+      }
+
+      setPaymentState("creating");
       localStorage.setItem(PENDING_CHART_KEY, JSON.stringify({
         date: chart.date,
         time: chart.time,
@@ -291,7 +322,7 @@ function PremiumSection({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
         },
         body: JSON.stringify({
           chart: {
@@ -305,43 +336,74 @@ function PremiumSection({
         })
       });
 
-      const data = await response.json();
-
-      if (!response.ok || !data.invoiceUrl) {
-        throw new Error(data.message || "Не удалось создать оплату Telegram Stars.");
+      const data = await readPaymentResponse(response, "Не удалось создать оплату Telegram Stars.");
+      if (data.alreadyPremium) {
+        await syncPremium();
+        setPremiumUnlocked(true);
+        setPaymentState("paid");
+        setCheckoutOpen(true);
+        paymentLockRef.current = false;
+        return;
       }
+      if (!data.invoiceUrl) throw new Error("Не удалось создать оплату Telegram Stars.");
 
       setPaymentState("redirecting");
 
       telegramWebApp.openInvoice(data.invoiceUrl, (status) => {
         if (status === "paid") {
           setPaymentState("checking");
-          void syncPremium();
-          window.dispatchEvent(new Event("astroguide:premium"));
           setPaymentError("");
-          localStorage.removeItem(PENDING_CHART_KEY);
-          setReportOpen(true);
+          void (async () => {
+            for (let attempt = 0; attempt < 12; attempt += 1) {
+              try {
+                const paymentResponse = await fetch(`${SERVER_URL}/api/payment-status?orderId=${encodeURIComponent(data.orderId)}`, {
+                  headers: { Authorization: `Bearer ${session.access_token}` }
+                });
+                const paymentData = await paymentResponse.json().catch(() => ({}));
+                if (paymentData.status === "paid") {
+                  localStorage.removeItem(PENDING_CHART_KEY);
+                  await syncPremium();
+                  window.dispatchEvent(new Event("astroguide:premium"));
+                  setPaymentState("paid");
+                  setCheckoutOpen(true);
+                  paymentLockRef.current = false;
+                  return;
+                }
+                if (["cancelled", "refunded"].includes(paymentData.status)) break;
+              } catch (error) {
+                console.error(error);
+              }
+              await new Promise((resolve) => setTimeout(resolve, 2500));
+            }
+            setPaymentState("error");
+            setPaymentError("Платёж ещё обрабатывается. Попробуйте обновить статус через несколько секунд.");
+            paymentLockRef.current = false;
+          })();
           return;
         }
 
         if (status === "cancelled") {
           setPaymentState("idle");
-          setPaymentError("Оплата отменена.");
+          setPaymentError("Оплата отменена. Вы можете попробовать ещё раз.");
+          paymentLockRef.current = false;
           return;
         }
 
         if (status === "failed") {
           setPaymentState("error");
-          setPaymentError("Telegram не подтвердил оплату Stars.");
+          setPaymentError("Не удалось подтвердить оплату Telegram Stars. Попробуйте ещё раз.");
+          paymentLockRef.current = false;
           return;
         }
 
         setPaymentState("idle");
+        paymentLockRef.current = false;
       });
     } catch (error) {
       console.error(error);
       setPaymentState("error");
-      setPaymentError(error.message || "Не удалось начать оплату Stars.");
+      setPaymentError(getFriendlyPaymentError(error, "Не удалось начать оплату Telegram Stars. Попробуйте ещё раз."));
+      paymentLockRef.current = false;
     }
   };
 
@@ -472,8 +534,22 @@ function PremiumSection({
               <div><span>💰</span><strong>Деньги</strong></div><div><span>🧭</span><strong>Развитие</strong></div><div><span>✨</span><strong>Аспекты</strong></div>
             </div>
             <div className="checkout-total"><span>Итого</span><strong>299 ₽</strong></div>
-            {paymentError && <div className="account-error">{paymentError}</div>}
-            <div className="checkout-payment-methods">
+            {paymentError && (
+              <div className="payment-feedback payment-feedback--error" role="alert">
+                <span>{paymentError}</span>
+                {(paymentState === "error" || paymentState === "failed") && (
+                  <button type="button" onClick={() => { setPaymentState("idle"); setPaymentError(""); }}>Попробовать снова</button>
+                )}
+              </div>
+            )}
+            {paymentState === "paid" && (
+              <div className="payment-feedback payment-feedback--success" role="status" aria-live="polite">
+                <strong>Premium активирован</strong>
+                <span>Сервер подтвердил оплату. Полный разбор уже доступен.</span>
+                <button type="button" onClick={() => { setCheckoutOpen(false); setReportOpen(true); }}>Продолжить</button>
+              </div>
+            )}
+            {paymentState !== "paid" && <div className="checkout-payment-methods">
               <button
                 className="checkout-payment checkout-payment--stars"
                 type="button"
@@ -501,7 +577,7 @@ function PremiumSection({
                 </span>
                 <span className="checkout-payment__price">299 ₽</span>
               </button>
-            </div>
+            </div>}
             {["creating", "redirecting", "checking"].includes(paymentState) && (
               <div className="checkout-processing">
                 <span className="checkout-processing__spinner" />

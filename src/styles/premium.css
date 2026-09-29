@@ -727,6 +727,56 @@
   background: rgba(123,213,185,.06);
 }
 
+.payment-feedback {
+  display: grid;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 14px;
+  border: 1px solid var(--astro-border);
+  border-radius: var(--astro-radius-md);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.payment-feedback--error {
+  border-color: rgba(255,139,145,.28);
+  color: #ffc1c4;
+  background: rgba(255,105,132,.08);
+}
+
+.payment-feedback--success {
+  border-color: rgba(123,213,185,.28);
+  color: #d8f8e9;
+  background: rgba(123,213,185,.08);
+}
+
+.payment-feedback strong {
+  color: inherit;
+  font-size: 16px;
+}
+
+.payment-feedback button {
+  min-height: 42px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0 14px;
+  border: 1px solid currentColor;
+  border-radius: var(--astro-radius-md);
+  background: transparent;
+  color: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.payment-feedback--success button {
+  border-color: rgba(123,213,185,.32);
+  background: rgba(123,213,185,.16);
+}
+
+.payment-feedback button:hover {
+  background: rgba(255,255,255,.08);
+}
+
 @keyframes astroguide-premium-spin {
   to { transform: rotate(360deg); }
 }
