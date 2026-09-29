@@ -13,12 +13,19 @@ function ReportViewer({ report, chartData = null, onBack }) {
       </div>
 
       <div className="report-viewer__notice">
-        Текст ниже показывает структуру будущего отчёта. Персональные формулировки появятся после подключения расчётных данных карты.
+        Это учебный demo-пример: текст объясняет подход и структуру, но не является персональной интерпретацией вашей карты. Астрологические формулировки ниже — интерпретационная традиция, а не научный диагноз или точное предсказание.
       </div>
+
+      <nav className="report-viewer__toc" aria-label="Оглавление отчёта">
+        <span className="eyebrow">ОГЛАВЛЕНИЕ</span>
+        <div>{report.sections.map((section, index) => <a key={section.id} href={`#report-${section.id}`}>{String(index + 1).padStart(2, "0")} · {section.title}</a>)}</div>
+      </nav>
 
       <div className="report-viewer__sections">
         {report.sections.map((section, index) => <ReportSection key={section.id} section={section} index={index} />)}
       </div>
+
+      <button type="button" className="report-viewer__top" onClick={() => document.querySelector(".premium-reports-modal")?.scrollTo({ top: 0, behavior: "smooth" })}>↑ В начало</button>
 
       <div className="report-viewer__contract">
         <span className="eyebrow">КОНТРАКТ ДАННЫХ</span>

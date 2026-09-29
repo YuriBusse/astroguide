@@ -1,4 +1,6 @@
-const DEMO_SECTIONS = [
+import { DEMO_REPORT_SECTIONS } from "./demoContent.js";
+
+const _DEMO_SECTIONS = [
   {
     id: "overview",
     eyebrow: "ОСНОВНЫЕ ПОЛОЖЕНИЯ",
@@ -29,38 +31,38 @@ export const REPORT_CATALOG = [
   {
     id: "personality",
     title: "Характер и личность",
-    description: "Разбор основных особенностей вашей натальной карты.",
+    description: "Понятное введение в самонаблюдение через язык натальной карты.",
     status: "available",
-    statusLabel: "Демонстрация",
+    statusLabel: "ДЕМО · ПОЛНЫЙ ПРИМЕР",
     icon: "◌",
-    sections: DEMO_SECTIONS
+    sections: DEMO_REPORT_SECTIONS.personality
   },
   {
     id: "relationships",
     title: "Отношения",
-    description: "Темы близости, границ и взаимодействия с другими.",
-    status: "development",
-    statusLabel: "В разработке",
+    description: "Как говорить о близости, границах и взаимодействии без ярлыков.",
+    status: "available",
+    statusLabel: "ДЕМО · ПОЛНЫЙ ПРИМЕР",
     icon: "♡",
-    sections: []
+    sections: DEMO_REPORT_SECTIONS.relationships
   },
   {
     id: "career",
     title: "Карьера и реализация",
-    description: "Направления роста, мотивации и профессионального ритма.",
-    status: "development",
-    statusLabel: "В разработке",
+    description: "Как исследовать рабочий стиль, мотивацию и развитие простыми шагами.",
+    status: "available",
+    statusLabel: "ДЕМО · ПОЛНЫЙ ПРИМЕР",
     icon: "⌁",
-    sections: []
+    sections: DEMO_REPORT_SECTIONS.career
   },
   {
     id: "periods",
     title: "Жизненные периоды",
-    description: "Будущий раздел для бережного анализа циклов и переходов.",
-    status: "development",
-    statusLabel: "Скоро",
+    description: "Бережный способ смотреть на перемены, циклы и следующий шаг.",
+    status: "available",
+    statusLabel: "ДЕМО · ПОЛНЫЙ ПРИМЕР",
     icon: "◒",
-    sections: []
+    sections: DEMO_REPORT_SECTIONS.periods
   }
 ];
 

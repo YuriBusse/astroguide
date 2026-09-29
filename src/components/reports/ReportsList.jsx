@@ -4,7 +4,7 @@ function ReportsList({ reports, onSelect, onOpenFullReport }) {
       <div className="reports-list__heading">
         <span className="eyebrow">ASTROGUIDE PREMIUM</span>
         <h2 id="reports-list-title">Доступные отчёты</h2>
-        <p>Выберите тему для чтения. Новые разделы будут добавляться постепенно.</p>
+        <p>Это учебные демонстрации структуры и стиля будущих персональных отчётов. Выберите тему для чтения.</p>
       </div>
 
       <div className="reports-list__cards">
@@ -16,11 +16,7 @@ function ReportsList({ reports, onSelect, onOpenFullReport }) {
               <h3>{report.title}</h3>
               <p>{report.description}</p>
             </div>
-            {report.status === "available" ? (
-              <button type="button" className="report-card__action" onClick={() => onSelect(report.id)}>Открыть</button>
-            ) : (
-              <span className="report-card__disabled">Скоро</span>
-            )}
+            <button type="button" className="report-card__action" onClick={() => onSelect(report.id)}>Открыть</button>
           </article>
         ))}
       </div>

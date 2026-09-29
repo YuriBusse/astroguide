@@ -1005,6 +1005,33 @@
   line-height: 1.55;
 }
 
+.report-viewer__toc {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid rgba(242,198,109,.16);
+  border-radius: var(--astro-radius-md);
+  background: rgba(242,198,109,.045);
+}
+
+.report-viewer__toc > div {
+  display: grid;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.report-viewer__toc a {
+  color: var(--astro-accent);
+  font-size: 11px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.report-viewer__toc a:hover,
+.report-viewer__toc a:focus-visible {
+  color: var(--astro-gold);
+  text-decoration: underline;
+}
+
 .report-viewer__sections {
   display: grid;
   gap: 10px;
@@ -1016,6 +1043,7 @@
   border: 1px solid rgba(255,255,255,.075);
   border-radius: var(--astro-radius-md);
   background: rgba(255,255,255,.025);
+  scroll-margin-top: 16px;
 }
 
 .report-viewer__section h3 {
@@ -1030,6 +1058,63 @@
   color: rgba(255,255,255,.72);
   font-size: 13px;
   line-height: 1.75;
+}
+
+.report-viewer__example,
+.report-viewer__practice,
+.report-viewer__questions {
+  margin-top: 14px;
+  padding: 12px 13px;
+  border-radius: 12px;
+  background: rgba(199,166,255,.06);
+}
+
+.report-viewer__practice {
+  background: rgba(242,198,109,.07);
+}
+
+.report-viewer__example strong,
+.report-viewer__practice strong,
+.report-viewer__questions strong {
+  color: var(--astro-gold);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.report-viewer__example p,
+.report-viewer__practice p {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.report-viewer__questions ul {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: rgba(255,255,255,.72);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.report-viewer__top {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 14px;
+  border: 1px solid rgba(199,166,255,.2);
+  border-radius: var(--astro-radius-md);
+  background: rgba(199,166,255,.06);
+  color: var(--astro-accent);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.report-viewer__top:hover,
+.report-viewer__top:focus-visible {
+  background: rgba(199,166,255,.12);
 }
 
 .report-viewer__contract {
@@ -1074,7 +1159,8 @@
   }
 
   .report-viewer__cover,
-  .report-viewer__section {
+  .report-viewer__section,
+  .report-viewer__toc {
     padding: 16px;
   }
 }
