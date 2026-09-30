@@ -54,7 +54,10 @@ const majorCards = MAJOR_ARCANA.map(([id, name, theme, keywords, reversedMeaning
   suit: null,
   keywords: keywords.split(", "),
   shortMeaning: `Карта часто связывается с темой «${theme.toLowerCase()}» и может подсветить ${keywords}.`,
-  reversedMeaning: `В перевёрнутом положении карта может обратить внимание на ${reversedMeaning}.`
+  reversedMeaning: `В перевёрнутом положении карта может обратить внимание на ${reversedMeaning}.`,
+  lifeMeaning: `В повседневности это может проявляться через ситуации, где нужно заметить тему «${theme.toLowerCase()}» и не принимать первый импульс за окончательный ответ.`,
+  attention: `Обратите внимание на то, где ${reversedMeaning.split(",")[0]} начинает мешать ясному выбору.`,
+  advice: `Дайте этой теме место, но проверьте её реальными обстоятельствами и собственными решениями.`
 }));
 
 const minorCards = SUITS.flatMap((suit) => RANKS.map(([rankId, rankName, rankTheme]) => ({
@@ -64,7 +67,10 @@ const minorCards = SUITS.flatMap((suit) => RANKS.map(([rankId, rankName, rankThe
   suit: suit.name,
   keywords: [suit.theme, rankTheme],
   shortMeaning: `Карта может указывать на ${suit.upright}, связанные с темой «${rankTheme}».`,
-  reversedMeaning: `В перевёрнутом положении может проявиться ${suit.reversed}, связанные с этой ситуацией.`
+  reversedMeaning: `В перевёрнутом положении может проявиться ${suit.reversed}, связанные с этой ситуацией.`,
+  lifeMeaning: `В жизни это может проявиться в теме «${suit.theme}»: через конкретный разговор, решение, задачу или выбор темпа.`,
+  attention: `Проверьте, не стало ли слишком много ${suit.reversed.split(",")[0]} вместо спокойного движения маленькими шагами.`,
+  advice: `Назовите один практический шаг, который возвращает опору, и не пытайтесь решить весь вопрос за один день.`
 })));
 
 export const TAROT_DECK = [...majorCards, ...minorCards];
