@@ -46,6 +46,13 @@ function readHash() {
   return normalizeRoute(path);
 }
 
+function readInitialRoute() {
+  if (new URLSearchParams(window.location.search).has("astroguide_order")) {
+    return "/chart-result";
+  }
+  return readHash();
+}
+
 function loadPendingChart() {
   try {
     const raw = localStorage.getItem(PENDING_KEY);
@@ -76,7 +83,7 @@ function ChartResultFallback() {
 }
 
 function App() {
-  const [route, setRoute] = useState(readHash);
+  const [route, setRoute] = useState(readInitialRoute);
   const [pendingChart, setPendingChart] = useState(loadPendingChart);
   const [reportsRequested, setReportsRequested] = useState(false);
 

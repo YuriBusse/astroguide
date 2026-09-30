@@ -2466,6 +2466,36 @@ p {
   font-size: 11px;
 }
 
+.tarot-question-examples {
+  display: grid;
+  gap: 6px;
+  margin: -4px 0 8px;
+}
+
+.tarot-question-examples span,
+.tarot-question-help {
+  color: var(--tg-theme-hint-color);
+  font-size: 11px;
+}
+
+.tarot-question-examples button {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--tg-theme-button-color);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tarot-question-help {
+  margin: 0 0 14px;
+  line-height: 1.45;
+}
+
 .tarot-draw__heading,
 .tarot-result__heading {
   margin: 10px 0 22px;
@@ -2618,6 +2648,17 @@ p {
   line-height: 1.2;
 }
 
+.tarot-card-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tarot-card-art--compact {
+  width: 76px;
+  max-width: 100%;
+}
+
 .tarot-card__symbol {
   color: var(--ag-gold);
   font-size: 28px;
@@ -2632,6 +2673,36 @@ p {
   color: var(--tg-theme-hint-color);
   font-size: 12px;
   text-align: center;
+}
+
+.tarot-yesno,
+.tarot-connection {
+  margin-bottom: 14px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--ag-gold) 35%, transparent);
+  border-radius: var(--ag-radius-md);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--ag-gold) 12%, var(--tg-theme-secondary-bg-color)), var(--tg-theme-secondary-bg-color));
+}
+
+.tarot-yesno strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--ag-gold);
+  font-size: 26px;
+  letter-spacing: .04em;
+}
+
+.tarot-yesno p,
+.tarot-connection p {
+  margin-top: 7px;
+  color: var(--tg-theme-hint-color);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tarot-connection {
+  margin-top: 14px;
+  margin-bottom: 0;
 }
 
 .tarot-result__cards {

@@ -73,6 +73,17 @@ function TarotPage() {
             />
             <small>{question.length}/240</small>
           </label>
+          <div className="tarot-question-examples" aria-label="Примеры вопросов">
+            <span>Примеры хороших вопросов:</span>
+            {[
+              "Возобновятся ли наши отношения в ближайшие 3 месяца?",
+              "Что поможет мне получить эту работу?",
+              "На что обратить внимание в ближайший месяц?"
+            ].map((example) => (
+              <button type="button" key={example} onClick={() => setQuestion(example)}>{example}</button>
+            ))}
+          </div>
+          <p className="tarot-question-help">Чем конкретнее вопрос и срок, тем точнее символический ориентир расклада.</p>
           <AppButton size="lg" onClick={startReading}>Начать расклад</AppButton>
         </>
       ) : (

@@ -1,3 +1,5 @@
+import TarotCardArt from "./TarotCardArt";
+
 function TarotCard({ card, position, revealed, onReveal, disabled = false }) {
   const label = revealed
     ? `${card.name}, ${card.reversed ? "перевёрнутая" : "прямая"}`
@@ -17,11 +19,7 @@ function TarotCard({ card, position, revealed, onReveal, disabled = false }) {
           <small>{position}</small>
         </span>
         <span className="tarot-card__face" aria-hidden={!revealed}>
-          <span className="tarot-card__arcana">{card.arcana}</span>
-          <span className="tarot-card__art" data-arcana={card.arcana} data-suit={card.suit || "major"} aria-hidden="true">
-            <span className="tarot-card__art-symbol">{card.suit ? card.suit.slice(0, 1) : "✦"}</span>
-            <span className="tarot-card__art-orbit" />
-          </span>
+          <TarotCardArt card={card} size="compact" />
           <strong>{card.name}</strong>
           <small>{card.reversed ? "Перевёрнутая" : "Прямая"}</small>
         </span>
