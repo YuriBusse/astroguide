@@ -137,9 +137,9 @@ function NatalWheel({ planetLongitudes = {}, ascendantLongitude, houseLongitudes
     <section className="natal-card">
       <div className="natal-card__heading">
         <div>
-          <span className="eyebrow">ASTROGUIDE · PLACIDUS</span>
+          <span className="eyebrow">ASTROGUIDE · МЕТОД PLACIDUS</span>
           <h2>Натальная карта</h2>
-          <p>Точные положения планет, куспиды домов и основные аспекты</p>
+          <p>Круговая схема показывает планеты, знаки, дома и основные связи между ними. Placidus — выбранный метод расчёта домов.</p>
         </div>
         <div className="chart-legend">
           <span><i className="legend-dot legend-dot--planet" /> Планеты</span>
@@ -246,6 +246,7 @@ function NatalWheel({ planetLongitudes = {}, ascendantLongitude, houseLongitudes
       </div>
 
       <div className="planet-table">
+        <p className="planet-table__help">В таблице ниже видно, в каком знаке и доме находится каждая планета. Это техническая часть карты — её можно изучать постепенно.</p>
         <div className="planet-table__head">
           <span>Планета</span><span>Знак</span><span>Градус</span><span>Дом</span>
         </div>

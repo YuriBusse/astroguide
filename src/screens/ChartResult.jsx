@@ -198,6 +198,27 @@ function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onRe
           <p className="result-orientation__approx">Время рождения указано приблизительно, поэтому Асцендент и дома стоит воспринимать как ориентир.</p>
         )}
       </section>
+      <section className="result-section result-section--guide" aria-labelledby="chart-guide-title">
+        <div className="section-heading">
+          <span className="eyebrow">ПРОСТАЯ СХЕМА</span>
+          <h2 id="chart-guide-title">Как устроена натальная карта</h2>
+          <p>Чтобы не потеряться в символах, читайте любую строку по трём вопросам: что описывается, как это проявляется и в какой сфере жизни.</p>
+        </div>
+        <div className="result-guide-grid">
+          <article>
+            <strong>Планета — что?</strong>
+            <span>Показывает тему: например, Луна связана с чувствами, а Меркурий — с мышлением и общением.</span>
+          </article>
+          <article>
+            <strong>Знак — как?</strong>
+            <span>Описывает стиль проявления темы. Это не ярлык и не приговор, а один из способов наблюдать за собой.</span>
+          </article>
+          <article>
+            <strong>Дом — где?</strong>
+            <span>Дом — это жизненная область: общение, отношения, работа, дом, друзья и другие повседневные темы.</span>
+          </article>
+        </div>
+      </section>
       <section className="result-section result-section--premium-teaser">
         <div className="result-section--premium-teaser__inner">
           <div className="result-section--premium-teaser__copy">
