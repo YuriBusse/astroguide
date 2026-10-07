@@ -2,6 +2,16 @@ import { defineConfig } from "vite";
 import preact from "@preact/preset-vite";
 
 export default defineConfig({
+  base: "/",
+  server: {
+    allowedHosts: [".trycloudflare.com"],
+    proxy: {
+      "/api": {
+        target: "http://localhost:8787",
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [preact()],
   assetsInclude: ["**/*.wasm"],
 

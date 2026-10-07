@@ -1,0 +1,19 @@
+{
+  "deck": "rider-waite",
+  "free_readings": 1,
+  "packs": [
+    {
+      "readings": 3,
+      "price_rub": 199
+    },
+    {
+      "readings": 5,
+      "price_rub": 299
+    },
+    {
+      "readings": 10,
+      "price_rub": 399
+    }
+  ],
+  "referral_reward_readings": 3
+}

@@ -4,8 +4,11 @@ create extension if not exists pgcrypto;
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   name text,
+  telegram_user_id bigint unique,
   created_at timestamptz not null default now()
 );
+
+alter table public.profiles add column if not exists telegram_user_id bigint unique;
 
 create table if not exists public.charts (
   id uuid primary key default gen_random_uuid(),

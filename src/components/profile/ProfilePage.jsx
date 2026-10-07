@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AccountPanel from "../AccountPanel";
 import AppButton from "../AppButton";
-import { cloudConfigured, getCloudCharts, getSession, getValidSession } from "../../utils/cloud";
+import ReferralCard from "./ReferralCard";
+import { cloudConfigured, getCloudCharts, getCloudResults, getSession, getValidSession } from "../../utils/cloud";
 
 const STORAGE_KEY = "astroguide_saved_charts";
 const SERVER_URL = import.meta.env.DEV
@@ -67,14 +68,33 @@ function ProfileChartCard({ chart }) {
   );
 }
 
+function ProfileResultCard({ result }) {
+  const isTarot = result.result_type === "tarot";
+  const isForecast = result.result_type === "forecast";
+  const isReport = result.result_type === "report";
+  const typeLabel = isTarot ? "Таро" : isForecast ? "Прогноз" : isReport ? "Premium-отчёт" : "Совместимость";
+  const title = result.title || typeLabel;
+  const openResult = () => window.dispatchEvent(new CustomEvent(isTarot ? "astroguide:open-tarot-result" : isForecast ? "astroguide:open-forecast-result" : "astroguide:open-compatibility-result", { detail: result }));
+  return (
+    <article className="profile-chart-card profile-result-card">
+      <div className="profile-chart-card__icon" aria-hidden="true">{isTarot ? "🔮" : isForecast ? "◌" : "♡"}</div>
+      <div className="profile-chart-card__body"><strong>{title}</strong><span>{typeLabel}</span>{result.created_at && <small>Сохранён {formatCreatedAt(result.created_at)}</small>}</div>
+      <button type="button" className="profile-chart-card__open" onClick={openResult}>Открыть</button>
+    </article>
+  );
+}
+
 function ProfilePage({ onNavigate }) {
   const [accountOpen, setAccountOpen] = useState(false);
   const [session, setSession] = useState(() => getSession());
   const [charts, setCharts] = useState([]);
+  const [results, setResults] = useState([]);
   const [status, setStatus] = useState("loading");
   const [error, setError] = useState("");
   const [premiumStatus, setPremiumStatus] = useState("checking");
   const [premiumChart, setPremiumChart] = useState(null);
+  const [referralInfo, setReferralInfo] = useState(null);
+  const [freeAnalysis, setFreeAnalysis] = useState(null);
 
   const loadProfile = useCallback(async () => {
     setStatus("loading");
@@ -85,10 +105,40 @@ function ProfilePage({ onNavigate }) {
 
     if (!currentSession) {
       setCharts([]);
+      setResults([]);
       setPremiumChart(null);
+      setReferralInfo(null);
+      setFreeAnalysis(null);
       setPremiumStatus("inactive");
       setStatus("ready");
       return;
+    }
+
+    try {
+      const referralCode = new URLSearchParams(window.location.search).get("ref");
+      if (referralCode) {
+        await fetch(`${SERVER_URL}/api/referral/attach`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentSession.access_token}`
+          },
+          body: JSON.stringify({ code: referralCode })
+        });
+      }
+      const referralResponse = await fetch(`${SERVER_URL}/api/referral`, {
+        headers: { Authorization: `Bearer ${currentSession.access_token}` }
+      });
+      if (!referralResponse.ok) throw new Error("Referral API unavailable");
+      setReferralInfo(await referralResponse.json());
+      const freeAnalysisResponse = await fetch(`${SERVER_URL}/api/free-analysis`, {
+        headers: { Authorization: `Bearer ${currentSession.access_token}` }
+      });
+      if (!freeAnalysisResponse.ok) throw new Error("Free analysis API unavailable");
+      setFreeAnalysis(await freeAnalysisResponse.json());
+    } catch {
+      setReferralInfo(null);
+      setFreeAnalysis(null);
     }
 
     let normalizedCharts = [];
@@ -98,11 +148,18 @@ function ProfilePage({ onNavigate }) {
         : readLocalCharts();
       normalizedCharts = (loadedCharts || []).map(normalizeChart);
       setCharts(normalizedCharts);
+      try {
+        setResults(await getCloudResults());
+      } catch (resultsError) {
+        console.warn("Не удалось загрузить сохранённые результаты:", resultsError);
+        setResults([]);
+      }
     } catch (loadError) {
       setCharts([]);
       setPremiumChart(null);
       setPremiumStatus("inactive");
-      setError(loadError.message || "Не удалось загрузить профиль.");
+      console.error("Не удалось загрузить профиль:", loadError);
+      setError("Не удалось загрузить данные. Попробуйте ещё раз.");
       setStatus("error");
       return;
     }
@@ -142,11 +199,13 @@ function ProfilePage({ onNavigate }) {
     window.addEventListener("astroguide:auth", sync);
     window.addEventListener("astroguide:chart-saved", sync);
     window.addEventListener("astroguide:premium", sync);
+    window.addEventListener("astroguide:result-saved", sync);
     window.addEventListener("storage", sync);
     return () => {
       window.removeEventListener("astroguide:auth", sync);
       window.removeEventListener("astroguide:chart-saved", sync);
       window.removeEventListener("astroguide:premium", sync);
+      window.removeEventListener("astroguide:result-saved", sync);
       window.removeEventListener("storage", sync);
     };
   }, [loadProfile]);
@@ -226,6 +285,21 @@ function ProfilePage({ onNavigate }) {
           </div>
         )}
 
+        <section className="profile-section profile-reports">
+          <div className="profile-reports__copy">
+            <span className="eyebrow">ASTROGUIDE PREMIUM</span>
+            <h2>Premium</h2>
+            <p>{premiumStatus === "active" ? "Premium активен — расширенные возможности доступны." : "Premium не подключён — базовые результаты остаются бесплатными."}</p>
+          </div>
+          <AppButton
+            variant={premiumStatus === "active" ? "primary" : "secondary"}
+            onClick={premiumStatus === "active" ? openReports : () => window.dispatchEvent(new CustomEvent("astroguide:premium-preview", { detail: { productId: "premium_subscription", accessType: "subscription", title: "AstroGuide Premium" } }))}
+            disabled={premiumStatus === "checking" || premiumStatus === "error"}
+          >
+            {premiumStatus === "active" ? "Открыть отчёты" : "Подробнее о Premium"}
+          </AppButton>
+        </section>
+
         <section className="profile-section">
           <div className="profile-section__heading"><div><span className="eyebrow">ИСТОРИЯ</span><h2>Мои натальные карты</h2></div><b>{charts.length}</b></div>
           {charts.length ? (
@@ -240,26 +314,25 @@ function ProfilePage({ onNavigate }) {
           )}
         </section>
 
+        <section className="profile-section">
+          <div className="profile-section__heading"><div><span className="eyebrow">ИСТОРИЯ</span><h2>Мои результаты</h2></div><b>{results.length}</b></div>
+          {results.length ? <div className="profile-chart-list">{results.map((result) => <ProfileResultCard result={result} key={result.id} />)}</div> : <div className="profile-empty"><strong>Здесь будут ваши сохранённые разборы</strong><p>Создайте первый результат, чтобы возвращаться к нему позже.</p><AppButton size="sm" onClick={() => onNavigate("/chart-birth")}>Создать первый результат</AppButton></div>}
+        </section>
+
+        <ReferralCard
+          referralCode={referralInfo?.code || null}
+          invitedCount={referralInfo?.invitedCount || 0}
+          qualifiedCount={referralInfo?.qualifiedCount || 0}
+          rewardsCount={referralInfo?.rewardsCount || 0}
+          freeAnalysisBalance={freeAnalysis?.balance || 0}
+        />
+
         <section className="profile-section profile-actions">
           <div className="profile-section__heading"><div><span className="eyebrow">БЫСТРЫЕ ДЕЙСТВИЯ</span><h2>Продолжить путь</h2></div></div>
           <AppButton onClick={() => onNavigate("/chart-birth")}>Создать натальную карту</AppButton>
           <AppButton variant="secondary" onClick={openAccount}>Управление аккаунтом</AppButton>
         </section>
 
-        <section className="profile-section profile-reports">
-          <div className="profile-reports__copy">
-            <span className="eyebrow">ASTROGUIDE PREMIUM</span>
-            <h2>Premium-отчёты</h2>
-            <p>Каталог персональных разборов: характер, отношения, карьера и жизненные периоды.</p>
-          </div>
-          <AppButton
-            variant={premiumStatus === "active" ? "primary" : "secondary"}
-            onClick={openReports}
-            disabled={premiumStatus === "checking" || premiumStatus === "error"}
-          >
-            {premiumStatus === "active" ? "Открыть отчёты" : "Активировать Premium"}
-          </AppButton>
-        </section>
       </section>
       <AccountPanel open={accountOpen} onClose={closeAccount} onAuthChange={loadProfile} />
     </>

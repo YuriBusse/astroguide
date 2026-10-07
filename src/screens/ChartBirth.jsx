@@ -70,6 +70,23 @@ function ChartBirth({ onComplete, onBack }) {
     setError("");
   };
 
+    const handleFieldKeyDown = (event) => {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+
+    if (step < 3) {
+      goNext();
+      return;
+    }
+
+    if (city) {
+      submit();
+    } else {
+      setError("Выберите город из списка.");
+    }
+  };
+
   return (
     <section className="screen screen--birth">
       <div className="screen-top">
@@ -113,6 +130,7 @@ function ChartBirth({ onComplete, onBack }) {
                 setDate(event.target.value);
                 setError("");
               }}
+                onKeyDown={handleFieldKeyDown}
               placeholder="ДД.ММ.ГГГГ"
             />
             <small className="birth-field__hint">Укажите дату максимально точно — от неё зависит знак Солнца.</small>
@@ -132,6 +150,7 @@ function ChartBirth({ onComplete, onBack }) {
                 setTimeApproximate(false);
                 setError("");
               }}
+                onKeyDown={handleFieldKeyDown}
             />
             <small className="birth-field__hint">
               Время влияет на Асцендент (первое впечатление) и дома (жизненные области).
@@ -168,6 +187,7 @@ function ChartBirth({ onComplete, onBack }) {
                 if (city && event.target.value !== city) setCity("");
                 setError("");
               }}
+              onKeyDown={handleFieldKeyDown}
               placeholder="Начните вводить город…"
               autoComplete="off"
             />

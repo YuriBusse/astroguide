@@ -940,7 +940,7 @@ button, select { cursor: pointer; }
 .account-form label:first-child { grid-column:1/-1; }
 .account-form label { display:block; }
 .account-form label span { display:block; margin:0 0 6px 2px; color:rgba(255,255,255,.43); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
-.account-form input { width:100%; box-sizing:border-box; height:46px; padding:0 13px; border:1px solid rgba(255,255,255,.1); border-radius:11px; color:#fff; background:rgba(255,255,255,.045); outline:none; }
+.account-form input { width:100%; box-sizing:border-box; height:46px; padding:0 13px; border:1px solid rgba(255,255,255,.1); border-radius:11px; color:#fff; background:rgba(255,255,255,.045); outline:none; font-size:16px; }
 .account-form input:focus { border-color:rgba(199,166,255,.55); box-shadow:0 0 0 3px rgba(199,166,255,.08); }
 .account-submit { grid-column:1/-1; height:45px; border:0; border-radius:11px; color:#17111f; background:linear-gradient(135deg,#f2c66d,#d8a8ff); font-weight:800; font-size:11px; cursor:pointer; }
 .account-submit span { margin-left:5px; font-size:15px; }
@@ -1768,5 +1768,147 @@ button, select { cursor: pointer; }
   .planet-table__head > :nth-child(3),
   .planet-table__row > :nth-child(3) {
     display: none;
+  }
+}
+
+/* =========================================================
+   MOBILE FORMS — iPhone / iOS
+   ========================================================= */
+
+@media (max-width: 700px) {
+  /* iOS Safari/WebView не должен приближать страницу при фокусе */
+  .account-form input,
+.account-form select,
+.account-form textarea,
+.birth-form input,
+.birth-form select,
+.birth-form textarea,
+.compatibility-field input,
+.compatibility-field select,
+.compatibility-field textarea,
+.tarot-question input,
+.tarot-question select,
+.tarot-question textarea {
+  font-size: 16px !important;
+  line-height: 1.35;
+}
+
+.tarot-question__tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.tarot-question__tools small {
+  font-size: 10px;
+  opacity: 0.55;
+}
+
+.tarot-question__break {
+  border: 0;
+  padding: 4px 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.tarot-question__break:active {
+  opacity: 0.6;
+}
+
+.tarot-question textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
+}
+
+  /* Нормальная высота и удобное нажатие */
+  .account-form input,
+  .birth-form input,
+  .birth-form select,
+  .compatibility-field input,
+  .compatibility-field select {
+    min-height: 48px;
+  }
+
+  .tarot-question textarea {
+    min-height: 110px;
+    padding: 13px 14px;
+  }
+
+  /* Чтобы браузер не пытался менять масштаб страницы */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Модалка аккаунта нормально скроллится над клавиатурой */
+  .account-modal {
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .account-modal__card {
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.home-profile {
+  margin-top: 18px;
+  margin-bottom: 18px;
+  padding: 2px;
+  border: 1px solid rgba(242, 198, 109, .28);
+  border-radius: 15px;
+  background: linear-gradient(
+    135deg,
+    rgba(242, 198, 109, .08),
+    rgba(199, 166, 255, .08)
+  );
+  box-shadow: 0 8px 28px rgba(199, 166, 255, .06);
+}
+
+.account-confirm-email {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+/* Tarot — выбор одной карты из трёх */
+.tarot-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 620px;
+  margin: 24px auto 0;
+}
+
+.tarot-choice-slot {
+  min-width: 0;
+}
+
+.tarot-choice-slot .tarot-card {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .tarot-choice-grid {
+    gap: 8px;
+    max-width: 100%;
   }
 }

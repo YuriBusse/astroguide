@@ -58,6 +58,17 @@ export function getStartParam() {
   }
 }
 
+// Referral attribution is only a pending client hint. The backend must validate
+// the code and bind it to the authenticated user exactly once.
+export function getReferralCode() {
+  try {
+    const url = new URL(window.location.href);
+    return url.searchParams.get("ref") || getStartParam() || null;
+  } catch {
+    return getStartParam();
+  }
+}
+
 export function isDarkPreferred() {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
   try {

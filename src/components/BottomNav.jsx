@@ -1,9 +1,8 @@
-// Нижняя навигация Mini App: Главная / Карты / Таро / Профиль.
-
 const ITEMS = [
   { id: "home", label: "Главная", icon: "🏠", path: "/" },
-  { id: "charts", label: "Карты", icon: "✦", path: "/charts" },
+  { id: "birth-chart", label: "Карта", icon: "✦", path: "/chart-birth" },
   { id: "tarot", label: "Таро", icon: "🃏", path: "/tarot" },
+  { id: "compatibility", label: "Совместимость", icon: "❤️", path: "/compatibility" },
   { id: "profile", label: "Профиль", icon: "👤", path: "/profile" }
 ];
 
@@ -17,6 +16,7 @@ function BottomNav({ route, onNavigate }) {
     <nav className="bottom-nav" aria-label="Основная навигация">
       {ITEMS.map((item) => {
         const active = isActive(item, route);
+
         return (
           <button
             key={item.id}
@@ -25,8 +25,13 @@ function BottomNav({ route, onNavigate }) {
             aria-current={active ? "page" : undefined}
             onClick={() => onNavigate(item.path)}
           >
-            <span className="bottom-nav__icon" aria-hidden="true">{item.icon}</span>
-            <span className="bottom-nav__label">{item.label}</span>
+            <span className="bottom-nav__icon" aria-hidden="true">
+              {item.icon}
+            </span>
+
+            <span className="bottom-nav__label">
+              {item.label}
+            </span>
           </button>
         );
       })}

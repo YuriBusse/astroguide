@@ -11,12 +11,15 @@ import { calculateAspects } from "../utils/aspects";
 import { sunInterpretations } from "../data/interpretations/sun";
 import { moonInterpretations } from "../data/interpretations/moon";
 import { ascendantInterpretations } from "../data/interpretations/ascendant";
+import { cloudConfigured, getValidSession, saveCloudChart } from "../utils/cloud";
 
 // Экран результата: переиспользует расчётный стек Swiss Ephemeris
 // и компоненты NatalWheel, BeginnerSummary, PersonalPortrait.
 function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onReportsRequestHandled }) {
   const [result, setResult] = useState(null);
   const [calculationError, setCalculationError] = useState("");
+  const [saveState, setSaveState] = useState("idle");
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     if (!chart) return;
@@ -131,6 +134,35 @@ function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onRe
   }
   const { planets, planetSigns, houseLongitudes, ascendantLongitude, mcLongitude, planetHouses, aspects } = result;
 
+  const saveChart = async () => {
+    if (saveState === "saving" || saveState === "saved") return;
+    setSaveError("");
+    setSaveState("saving");
+    try {
+      const session = await getValidSession();
+      if (cloudConfigured) {
+        if (!session?.access_token) {
+          throw new Error("Войдите в аккаунт, чтобы сохранить карту в Supabase.");
+        }
+        await saveCloudChart(chart);
+      } else {
+        const key = "astroguide_saved_charts";
+        const stored = JSON.parse(localStorage.getItem(key) || "[]");
+        const duplicate = stored.some((item) => item.date === chart.date && item.time === chart.time && item.city === chart.city);
+        if (!duplicate) {
+          stored.unshift({ ...chart, id: `local-${Date.now()}`, premium: false });
+          localStorage.setItem(key, JSON.stringify(stored));
+        }
+      }
+      setSaveState("saved");
+      window.dispatchEvent(new Event("astroguide:chart-saved"));
+    } catch (error) {
+      console.error(error);
+      setSaveState("error");
+      setSaveError(error.message || "Не удалось сохранить карту.");
+    }
+  };
+
   const zodiac = planetSigns.sun.sign;
   const moon = planetSigns.moon.sign;
   const ascendant = longitudeToSign(ascendantLongitude).sign;
@@ -198,6 +230,14 @@ function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onRe
           <p className="result-orientation__approx">Время рождения указано приблизительно, поэтому Асцендент и дома стоит воспринимать как ориентир.</p>
         )}
       </section>
+
+      <div className="result-actions result-actions--top">
+        <AppButton variant="secondary" onClick={saveChart} disabled={saveState === "saving" || saveState === "saved"}>
+          {saveState === "saving" ? "Сохраняем…" : saveState === "saved" ? "✓ Карта сохранена" : saveState === "error" ? "Повторить сохранение" : "Сохранить карту"}
+        </AppButton>
+        {saveError && <span className="result-save-error" role="alert">{saveError}</span>}
+      </div>
+
       <section className="result-section result-section--guide" aria-labelledby="chart-guide-title">
         <div className="section-heading">
           <span className="eyebrow">ПРОСТАЯ СХЕМА</span>
@@ -219,6 +259,7 @@ function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onRe
           </article>
         </div>
       </section>
+
       <section className="result-section result-section--premium-teaser">
         <div className="result-section--premium-teaser__inner">
           <div className="result-section--premium-teaser__copy">
@@ -239,12 +280,15 @@ function ChartResult({ chart, onNavigate, onBack, reportsRequested = false, onRe
           <button
             className="result-section--premium-teaser__button"
             type="button"
-            onClick={() => {
-              window.dispatchEvent(new Event("astroguide:checkout-requested"));
-            }}
+            onClick={() =>
+              document.getElementById("premium")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              })
+            }
           >
             <strong>Получить полный разбор</strong>
-            <span>300 ₽ · один платёж</span>
+            <span>299 ₽ · один платёж</span>
             <b>↓</b>
           </button>
         </div>
