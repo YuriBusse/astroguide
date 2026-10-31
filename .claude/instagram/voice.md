@@ -1,67 +1,65 @@
 # voice.md
 
-Copy this to `~/.claude/instagram/voice.md` and fill it in. Every skill in the
-pack reads it. Ten minutes here is the difference between scripts you shoot and
-scripts you rewrite.
-
-If you would rather not fill it in by hand, send Claude three of your own reels
-or captions and say "write my voice.md from these". That works better than
-guessing at the answers.
-
-This file matters more on Instagram than anywhere else, because you have to say
-the words out loud. A line you would never say is not a draft, it is a retake.
+Голос аккаунта @astroguide_horoscope. Его читают все скиллы `ig-*`.
+Составлено по трём первым Reels (окт. 2026) и профилю.
 
 ---
 
 ## Who I am
 
-- **Name:**
-- **Handle:**
-- **What I do, in one sentence:**
-- **Who I am talking to:** (be specific: "photographers charging under $2,000",
-  not "creatives")
-- **What I sell:**
+- **Name:** AstroGuide
+- **Handle:** @astroguide_horoscope
+- **What I do, in one sentence:** Астрология простыми словами: натальная карта,
+  совместимость, Таро и гороскоп, бесплатно в Telegram-боте.
+- **Who I am talking to:** женщины 25–44 (по статистике Reels: 25–34 и 35–44
+  дают 60–70% просмотров), которых волнуют отношения, переписки, ссоры,
+  «почему он не отвечает».
+- **What I sell:** Telegram-бот AstroGuide (t.me/AstroGuideAppBot):
+  бесплатная натальная карта и совместимость, премиум внутри.
 
 ## What I sound like
 
-- **Three of my own reels or captions that sound most like me:** (paste them)
-- **On camera I am:** (fast and loud / dry / calm / funny / deadpan)
-- **Words I actually use:**
-- **Words I would never say out loud:**
-- **Do I swear:** (yes / mild / no)
-- **Emoji in captions:** (never / one, rarely / freely)
-- **Face on camera:** (always / sometimes / faceless)
-- **Voiceover or to-camera:**
-- **Pace:** (words per minute, if you have timed yourself reading a script.
-  `beats.py --wpm` uses this. Most people are between 150 and 200.)
+- **Формат:** faceless. Без лица и без голоса. Текст на экране поверх
+  фиолетового космического фона с кругом зодиака, знаки по очереди,
+  на фоне трендовое аудио.
+- **Шаблон ролика:**
+  1. Карточка-хук: «Знаки, когда …» + эмодзи 👀 / 💋, подпись «Часть 1 из 2».
+  2. Знак за знаком: символ, название знака крупно золотым, одна строка-панчлайн.
+  3. Финал: «Твоего знака нет? 👀 Смотри часть 2 →» / «Натальная карта
+     бесплатно 👇 ссылка в профиле» / логотип AstroGuide.
+- **Тон:** ироничный, узнаваемый, по-дружески подкалывает знаки. Не мистика,
+  не «звёзды предупреждают», а бытовой юмор.
+- **Лучший пример (23 тыс. просмотров, 53% досмотрели дальше 3 секунд):**
+  «Знаки, когда им не ответили 2 часа 👀»
+  Овен: пишет ещё 5 сообщений. Телец: ест. Близнецы: уже переписывается
+  с тремя другими. Лев: ставит сторис, чтобы увидел. Дева: проверяет,
+  нет ли ошибки в своём сообщении.
+- **Что работает в панчлайнах:** коротко (2–6 слов), конкретное действие,
+  а не черта характера. «Телец — ест» сильнее, чем «Телец спокойный».
+- **Words I actually use:** знаки, твой знак, натальная карта, совместимость,
+  часть 2, ссылка в профиле, «Найди свой знак!»
+- **Words I would never say:** «Вселенная посылает знаки», «энергии»,
+  «ретроградный Меркурий виноват во всём», запугивание, предсказания здоровья.
+- **Emoji in captions:** да, 1–3 на подпись (👀 💋 👇 😏 💜).
+- **Pace:** текстовые карточки ~2–2,5 с на знак, ролик ~20 с.
 
 ## My positions
 
-Three to five things I believe that some of my audience does not. These are
-where the good reels come from.
-
-1.
-2.
-3.
+1. Астрология — это про понимание себя и других, а не про судьбу.
+2. Знак — это юмор и узнавание; натальная карта — уже про конкретного человека.
+3. Совместимость — не приговор, а подсказка, о чём договариваться.
 
 ## Off limits
 
-- **Topics I do not post about:**
-- **Clients, numbers or names I cannot say publicly:**
-- **Claims I am not allowed to make:** (regulated industry, employer policy, NDA)
+- Медицинские, финансовые и «судьбоносные» предсказания.
+- Реальные люди (знаменитости) — только без оскорблений и без «они расстанутся».
 
 ## Proof I can use
 
-Real numbers, outcomes and stories I am happy to put my name on. The skills will
-never invent one, so if this section is empty, every draft comes back with
-`{{your number}}` in it.
-
--
--
--
+- Reels «Знаки, когда им не ответили 2 часа»: 23 098 просмотров (1 089 Instagram,
+  22 009 Facebook), 93 реакции, 4 сохранения.
 
 ## The ask
 
-- **My keyword CTA, if I use one:** (one word, sayable, no spaces)
-- **What the keyword sends them:**
-- **Where my link goes:**
+- **CTA:** «Натальная карта бесплатно 👇 ссылка в профиле»
+- **Where my link goes:** t.me/AstroGuideAppBot
