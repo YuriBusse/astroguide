@@ -51,3 +51,7 @@ wasm-test.html
 old-index.html
 production-index.js
 production.js
+
+# Python cache
+__pycache__/
+*.pyc
