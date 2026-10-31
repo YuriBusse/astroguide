@@ -55,3 +55,6 @@ production.js
 # Python cache
 __pycache__/
 *.pyc
+
+# Rendered reel videos
+.claude/instagram/reels/**/*.mp4
