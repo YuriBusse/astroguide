@@ -4,6 +4,8 @@ Usage: python3 render_same_answer.py spec.json bg.jpg out.mp4 cover.jpg
 spec: {"title": "...", "answer": "Скорпион", "answer_glyph": "♏",
        "rows": [["♈","Овен"], ...], "last": "только себе", "footer": "...", "dur": 8}
 A row whose sign equals the answer gets spec["last"] instead (the twist).
+Optional: "twists": {"Весы": "..."} per-sign overrides; "answer": "@self" = each sign names itself;
+"answer_glyph": null for plain-text answers.
 """
 import json, math, os, random, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont
@@ -13,19 +15,24 @@ from render_reel_v2 import W, H, FPS, serif, sans, gold_text_layer, wrap, divide
 from render_list_reel import panel
 
 
-def row_layer(glyph, name, ans, ans_glyph, twist=False):
+def row_layer(glyph, name, ans, ans_glyph, twist=False, cx=W / 2):
     L = Image.new("RGBA", (W, 72), (0, 0, 0, 0))
     d = ImageDraw.Draw(L)
     sym = ImageFont.truetype(SYM, 46)
     nf = sans("SemiBold", 46)
     af = sans("Bold", 46)
     left = f"{name}:"
-    d.text((W / 2 - 14, 36), left, font=nf, fill=(255, 255, 255, 255), anchor="rm")
-    d.text((W / 2 - 14 - d.textlength(left, font=nf) - 18, 34), glyph, font=sym, fill=GOLD_MID + (255,), anchor="rm")
+    d.text((cx - 14, 36), left, font=nf, fill=(255, 255, 255, 255), anchor="rm")
+    d.text((cx - 14 - d.textlength(left, font=nf) - 18, 34), glyph, font=sym, fill=GOLD_MID + (255,), anchor="rm")
     col = (255, 150, 200, 255) if twist else GOLD_TOP + (255,)
-    d.text((W / 2 + 14, 36), ans, font=af, fill=col, anchor="lm")
-    if not twist:
-        d.text((W / 2 + 14 + d.textlength(ans, font=af) + 16, 34), ans_glyph, font=sym, fill=GOLD_MID + (255,), anchor="lm")
+    room = 940 - (cx + 14) - (0 if (twist or not ans_glyph) else 70)
+    size = 46
+    while d.textlength(ans, font=af) > room and size > 30:
+        size -= 2
+        af = sans("Bold", size)
+    d.text((cx + 14, 36), ans, font=af, fill=col, anchor="lm")
+    if not twist and ans_glyph:
+        d.text((cx + 14 + d.textlength(ans, font=af) + 16, 34), ans_glyph, font=sym, fill=GOLD_MID + (255,), anchor="lm")
     return L
 
 
@@ -41,9 +48,17 @@ def main(spec_path, bg_path, out_path, cover_path):
     static.alpha_composite(panel(110, 480, 970, 1375))
     sd = ImageDraw.Draw(static)
     rows = []
+    twists = s.get("twists", {})
+    cx = s.get("split", W / 2)
     for g, n in s["rows"]:
-        tw = n == s["answer"]
-        rows.append((row_layer(g, n, s["last"] if tw else s["answer"], s["answer_glyph"], tw), tw))
+        if n in twists:
+            rows.append((row_layer(g, n, twists[n], None, True, cx), True))
+            continue
+        tw = n == s.get("answer")
+        if s.get("answer") == "@self":
+            rows.append((row_layer(g, n, n, g, False, cx), False))
+        else:
+            rows.append((row_layer(g, n, s["last"] if tw else s["answer"], s.get("answer_glyph"), tw, cx), tw))
     foot = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     ImageDraw.Draw(foot).text((W / 2, 1418), s["footer"], font=sans("Medium", 38), fill=LILAC + (240,), anchor="mm")
     rnd = random.Random(4)
