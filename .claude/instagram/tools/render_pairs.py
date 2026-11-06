@@ -15,7 +15,7 @@ from render_list_reel import panel
 PINK = (255, 140, 190, 255)
 
 
-def pair_row(p, rh):
+def pair_row(p, rh, sep="♥"):
     g1, n1, g2, n2 = p[:4]
     twist = p[4] if len(p) > 4 else None
     L = Image.new("RGBA", (W, rh), (0, 0, 0, 0))
@@ -24,7 +24,7 @@ def pair_row(p, rh):
     nf = sans("Bold" if twist else "SemiBold", 44)
     col = PINK if twist else (255, 255, 255, 255)
     cy = rh / 2 - (8 if twist else 0)
-    d.text((W / 2, cy), "♥", font=ImageFont.truetype(SYM, 38), fill=PINK, anchor="mm")
+    d.text((W / 2, cy), sep, font=(ImageFont.truetype(SYM, 38) if sep == "♥" else sans("SemiBold", 44)), fill=(PINK if sep == "♥" else GOLD_MID + (255,)), anchor="mm")
     d.text((W / 2 - 44, cy), n1, font=nf, fill=col, anchor="rm")
     d.text((W / 2 - 44 - d.textlength(n1, font=nf) - 18, cy - 2), g1, font=sym, fill=GOLD_MID + (255,), anchor="rm")
     d.text((W / 2 + 44, cy), n2, font=nf, fill=col, anchor="lm")
@@ -44,7 +44,7 @@ def main(spec_path, bg_path, out_path, cover_path):
     t = gold_text_layer(wrap(s["title"], tf, 940), tf, 90, W)
     static.alpha_composite(t, (0, 250))
     divider(ImageDraw.Draw(static), 250 + t.height + 18, 130)
-    top, bottom = 450, 1395
+    top, bottom = max(450, 250 + t.height + 60), 1420
     static.alpha_composite(panel(90, top, 990, bottom))
     n = len(s["pairs"])
     twists = sum(1 for p in s["pairs"] if len(p) > 4)
@@ -53,7 +53,7 @@ def main(spec_path, bg_path, out_path, cover_path):
     rows, y = [], top + 22
     for p in s["pairs"]:
         h = int(rh * (1.5 if len(p) > 4 else 1))
-        rows.append((pair_row(p, h), y, len(p) > 4))
+        rows.append((pair_row(p, h, s.get("sep", "♥")), y, len(p) > 4))
         y += h
     cta = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     cd = ImageDraw.Draw(cta)
