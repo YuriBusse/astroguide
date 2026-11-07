@@ -44,22 +44,27 @@ def text_bubble(m, maxw=820):
 
 
 def photo_bubble(m, w=900):
-    table = cover_fit(asset(m["table"]), w - 24, 500)
-    cards = [rounded(asset(c), 22) for c in m["cards"]]
-    cw, ch = 210, 315
-    for k, c in enumerate(cards):
-        im = c.resize((cw, ch), Image.LANCZOS)
-        x = int((w - 24) / 2 + (k - 1) * (cw + 22) - cw / 2)
-        sh = Image.new("RGBA", (cw + 40, ch + 40), (0, 0, 0, 0))
-        mk = Image.new("L", sh.size, 0)
-        ImageDraw.Draw(mk).rounded_rectangle((20, 20, 20 + cw, 20 + ch), radius=22, fill=170)
-        sh.putalpha(mk.filter(ImageFilter.GaussianBlur(12)))
-        table = table.convert("RGBA")
-        table.alpha_composite(sh, (x - 14, 92 - 8))
-        table.alpha_composite(im, (x, 92))
+    if "photo" in m:
+        PH = int((w - 24) * m.get("photo_ratio", 0.62))
+        table = cover_fit(asset(m["photo"]), w - 24, PH).convert("RGBA")
+    else:
+        PH = 500
+        table = cover_fit(asset(m["table"]), w - 24, PH)
+        cards = [rounded(asset(c), 22) for c in m["cards"]]
+        cw, ch = 210, 315
+        for k, c in enumerate(cards):
+            im = c.resize((cw, ch), Image.LANCZOS)
+            x = int((w - 24) / 2 + (k - 1) * (cw + 22) - cw / 2)
+            sh = Image.new("RGBA", (cw + 40, ch + 40), (0, 0, 0, 0))
+            mk = Image.new("L", sh.size, 0)
+            ImageDraw.Draw(mk).rounded_rectangle((20, 20, 20 + cw, 20 + ch), radius=22, fill=170)
+            sh.putalpha(mk.filter(ImageFilter.GaussianBlur(12)))
+            table = table.convert("RGBA")
+            table.alpha_composite(sh, (x - 14, 92 - 8))
+            table.alpha_composite(im, (x, 92))
     f = sans("Medium", 50)
     capw = text_bubble({"who": "out", "text": m["text"], "time": m["time"]}, w)
-    bh = 12 + 500 + capw.height - 6
+    bh = 12 + PH + capw.height - 6
     out = Image.new("RGBA", (w, bh), (0, 0, 0, 0))
     d = ImageDraw.Draw(out)
     d.rounded_rectangle((0, 0, w - 1, bh - 1), radius=40, fill=OUT_FILL)
@@ -71,7 +76,7 @@ def photo_bubble(m, w=900):
     tf = sans("Regular", 30)
     cd.text((w - 66, capw.height - 26), m["time"], font=tf, fill=TIME, anchor="rm")
     cd.text((w - 26, capw.height - 26), "✓✓", font=ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 26), fill=(110, 80, 200, 255), anchor="rm")
-    out.alpha_composite(cap, (0, 512 - 6))
+    out.alpha_composite(cap, (0, 12 + PH - 6))
     return out
 
 
@@ -80,7 +85,7 @@ def main(spec_path, out_path, cover_path):
     total = s.get("dur", 11)
     bg = cover_fit(asset(s["bg"]), W, H).filter(ImageFilter.GaussianBlur(18))
     bg = Image.blend(bg, Image.new("RGB", (W, H), (15, 6, 35)), 0.45).convert("RGBA")
-    bubbles = [(photo_bubble(m) if "cards" in m else text_bubble(m), m) for m in s["msgs"]]
+    bubbles = [(photo_bubble(m) if ("cards" in m or "photo" in m) else text_bubble(m), m) for m in s["msgs"]]
     gap = 22
     rnd = random.Random(5)
     hearts = [[rnd.uniform(0, W), rnd.uniform(0, H), rnd.uniform(16, 40), rnd.uniform(10, 30), rnd.uniform(0, 6.28),
