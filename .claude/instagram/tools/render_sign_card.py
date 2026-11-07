@@ -20,7 +20,7 @@ def main(spec_path, photo, out_path, cover_path):
     tf = sans("Bold", 74)
     td = ImageDraw.Draw(title)
     tw = td.textlength(s["title"], font=tf)
-    tx, ty = W / 2 - 34, 250
+    tx, ty = W / 2 - 34, s.get("title_y", 250)
     for dx in range(-4, 5, 2):
         for dy in range(-4, 5, 2):
             td.text((tx + dx, ty + dy), s["title"], font=tf, fill=(30, 30, 30, 255), anchor="mm")
@@ -34,7 +34,7 @@ def main(spec_path, photo, out_path, cover_path):
     bh = lh * len(lines) + 44
     box = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     bd = ImageDraw.Draw(box)
-    y0 = 330
+    y0 = s.get("box_y", 330)
     bd.rectangle((70, y0, W - 70, y0 + bh), fill=(255, 255, 255, 245))
     bold = sans("Bold", 52)
     for i, ln in enumerate(lines):
