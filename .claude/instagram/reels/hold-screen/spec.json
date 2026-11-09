@@ -1,0 +1,50 @@
+{
+ "intro_bg": "bg_moon.jpg",
+ "intro": [
+  "Скажи:",
+  "«Вселенная, что он",
+  "думает обо мне?»",
+  "и зажми экран"
+ ],
+ "intro_dur": 2.8,
+ "slide_dur": 0.2,
+ "cycles": 3,
+ "slides": [
+  [
+   "bg_window.jpg",
+   "111"
+  ],
+  [
+   "bg_aurora.jpg",
+   "222"
+  ],
+  [
+   "bg_lake.jpg",
+   "333"
+  ],
+  [
+   "bg_library.jpg",
+   "444"
+  ],
+  [
+   "bg_mountains.jpg",
+   "555"
+  ],
+  [
+   "bg_autumn_park.jpg",
+   "666"
+  ],
+  [
+   "bg_table.jpg",
+   "777"
+  ],
+  [
+   "bg_moon.jpg",
+   "888"
+  ],
+  [
+   "photo_spread_tower_moon_fool.jpg",
+   "999"
+  ]
+ ]
+}
