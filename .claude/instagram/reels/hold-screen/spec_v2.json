@@ -1,0 +1,50 @@
+{
+ "intro_bg": "hs_balcony_moon.jpg",
+ "intro": [
+  "Скажи:",
+  "«Вселенная, что он",
+  "думает обо мне?»",
+  "и зажми экран"
+ ],
+ "intro_dur": 2.8,
+ "slide_dur": 0.2,
+ "cycles": 3,
+ "slides": [
+  [
+   "hs_balcony_moon.jpg",
+   "111"
+  ],
+  [
+   "hs_hands_spark.jpg",
+   "222"
+  ],
+  [
+   "hs_butterfly.jpg",
+   "333"
+  ],
+  [
+   "hs_phone_heart.jpg",
+   "444"
+  ],
+  [
+   "hs_clouds_star.jpg",
+   "555"
+  ],
+  [
+   "hs_field_girl.jpg",
+   "666"
+  ],
+  [
+   "hs_red_thread.jpg",
+   "777"
+  ],
+  [
+   "hs_letter.jpg",
+   "888"
+  ],
+  [
+   "hs_car_rain.jpg",
+   "999"
+  ]
+ ]
+}
