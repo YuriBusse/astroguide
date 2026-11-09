@@ -28,8 +28,8 @@ def main(spec_path, out_path, cover_path):
     bg = cover_fit(src, BW, BH).filter(ImageFilter.GaussianBlur(6))
     # card
     n = len(s["pairs"])
-    tf = serif(76, 700)
-    tlines = wrap(s["title"], tf, 800)
+    tf = serif(s.get("title_size", 76), 700)
+    tlines = wrap(s["title"], tf, 820)
     card_top, card_bot = 300, 1440
     card = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -48,20 +48,28 @@ def main(spec_path, out_path, cover_path):
     sparkle(cd, W / 2, y, 12, GOLDM)
     rows_top = y + 34
     cta_h = 120
-    rh = int(min(68, (card_bot - 40 - cta_h - rows_top) / n))
+    rh = int(min(s.get("max_row", 68), (card_bot - 40 - cta_h - rows_top) / n))
     sep = s.get("sep", "—")
-    nf = sans("Medium", 44)
+    cx0 = s.get("split", W / 2)
+    nf = sans("Medium", s.get("font", 44))
     sym = ImageFont.truetype(SYM, 42)
     rows = []
     for k, (g1, n1, g2, n2) in enumerate(s["pairs"]):
         L = Image.new("RGBA", (W, rh), (0, 0, 0, 0))
         d = ImageDraw.Draw(L)
         cy = rh / 2
-        d.text((W / 2, cy), sep, font=nf, fill=GOLDM, anchor="mm")
-        d.text((W / 2 - 40, cy), n1, font=nf, fill=INK, anchor="rm")
-        d.text((W / 2 - 40 - d.textlength(n1, font=nf) - 16, cy - 2), g1, font=sym, fill=GOLDM, anchor="rm")
-        d.text((W / 2 + 40, cy), n2, font=nf, fill=INK, anchor="lm")
-        d.text((W / 2 + 40 + d.textlength(n2, font=nf) + 16, cy - 2), g2, font=sym, fill=GOLDM, anchor="lm")
+        d.text((cx0, cy), sep, font=nf, fill=GOLDM, anchor="mm")
+        d.text((cx0 - 36, cy), n1, font=nf, fill=INK, anchor="rm")
+        d.text((cx0 - 36 - d.textlength(n1, font=nf) - 16, cy - 2), g1, font=sym, fill=GOLDM, anchor="rm")
+        f2 = nf
+        room = 930 - (cx0 + 36) - (0 if not g2 else 60)
+        size = 44
+        while d.textlength(n2, font=f2) > room and size > 30:
+            size -= 2
+            f2 = sans("Medium", size)
+        d.text((cx0 + 36, cy), n2, font=f2, fill=INK, anchor="lm")
+        if g2:
+            d.text((cx0 + 36 + d.textlength(n2, font=f2) + 16, cy - 2), g2, font=sym, fill=GOLDM, anchor="lm")
         rows.append((L, rows_top + k * rh))
     cta = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     ct = ImageDraw.Draw(cta)
