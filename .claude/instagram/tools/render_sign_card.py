@@ -47,6 +47,15 @@ def main(spec_path, photo, out_path, cover_path):
             f = bold if w_.strip(".,") in s.get("bold", []) else bf
             bd.text((x, y), w_, font=f, fill=(20, 20, 20, 255), anchor="lm")
             x += wd + sp
+    cta = None
+    if s.get("cta"):
+        cta = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        cdr = ImageDraw.Draw(cta)
+        cf = sans("SemiBold", 40)
+        cw_ = cdr.textlength(s["cta"], font=cf)
+        cy_ = s.get("cta_y", 1500)
+        cdr.rounded_rectangle((W / 2 - cw_ / 2 - 36, cy_ - 42, W / 2 + cw_ / 2 + 36, cy_ + 42), radius=42, fill=(255, 255, 255, 235))
+        cdr.text((W / 2, cy_), s["cta"], font=cf, fill=(40, 30, 25, 255), anchor="mm")
     rnd = random.Random(2)
     motes = [[rnd.uniform(0, W), rnd.uniform(0, H), rnd.uniform(1.5, 3.5), rnd.uniform(8, 25), rnd.uniform(0, 6.28)] for _ in range(40)]
     n = int(total * FPS)
@@ -77,6 +86,12 @@ def main(spec_path, photo, out_path, cover_path):
             if a < 1:
                 b2.putalpha(b2.getchannel("A").point(lambda v: int(v * a)))
             frame.alpha_composite(b2)
+        if cta is not None and gt > s.get("cta_at", 3.0):
+            a2 = ease((gt - s.get("cta_at", 3.0)) / 0.4)
+            c2 = cta if a2 >= 1 else cta.copy()
+            if a2 < 1:
+                c2.putalpha(c2.getchannel("A").point(lambda v: int(v * a2)))
+            frame.alpha_composite(c2)
         rgb = frame.convert("RGB")
         if i == int(2 * FPS):
             cover = rgb
