@@ -47,6 +47,7 @@ def main(spec_path, out_path, cover_path):
     cd.line((W / 2 + 24, y, W / 2 + 130, y), fill=GOLDM, width=2)
     sparkle(cd, W / 2, y, 12, GOLDM)
     rows_top = y + 34
+    # "static" (default): full card visible from frame 1 so platform-picked covers are never blank
     cta_h = 120
     rh = int(min(s.get("max_row", 68), (card_bot - 40 - cta_h - rows_top) / n))
     sep = s.get("sep", "—")
@@ -97,20 +98,20 @@ def main(spec_path, out_path, cover_path):
             a = int(60 + 60 * (0.5 + 0.5 * math.sin(gt * 2 + ph)))
             od.ellipse((xx - sz, yy - sz, xx + sz, yy + sz), fill=(255, 248, 230, a))
         frame.alpha_composite(ov.filter(ImageFilter.GaussianBlur(1)))
-        ca = ease(gt / 0.4)
+        ca = 1.0 if s.get("static", True) else ease(gt / 0.4)
         c2 = card if ca >= 1 else card.copy()
         if ca < 1:
             c2.putalpha(c2.getchannel("A").point(lambda v: int(v * ca)))
         frame.alpha_composite(c2)
         for j, (r, ry) in enumerate(rows):
-            a = ease((gt - 0.5 - j * 0.22) / 0.3)
+            a = 1.0 if s.get("static", True) else ease((gt - 0.5 - j * 0.22) / 0.3)
             if a <= 0:
                 continue
             im = r if a >= 1 else r.copy()
             if a < 1:
                 im.putalpha(im.getchannel("A").point(lambda v: int(v * a)))
             frame.alpha_composite(im, (int((1 - a) * -20), ry))
-        a = ease((gt - (0.5 + n * 0.22 + 0.4)) / 0.4)
+        a = 1.0 if s.get("static", True) else ease((gt - (0.5 + n * 0.22 + 0.4)) / 0.4)
         if a > 0:
             c3 = cta.copy()
             c3.putalpha(c3.getchannel("A").point(lambda v: int(v * a)))
